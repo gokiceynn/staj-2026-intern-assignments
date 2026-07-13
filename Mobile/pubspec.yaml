@@ -1,0 +1,58 @@
+name: vbshop
+description: "VB10 Staj 2026 — E-Ticaret projesi mobil uygulaması (Hepsiburada benzeri). Flutter + Riverpod + go_router + Dio, Clean Architecture."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Material bileşenlerinin Türkçe yerelleştirmesi
+  flutter_localizations:
+    sdk: flutter
+
+  # State management — iş mantığını UI'dan ayırır, test edilebilir controller'lar
+  flutter_riverpod: ^3.0.0
+
+  # Deklaratif navigasyon + auth guard (redirect) desteği
+  go_router: ^16.0.0
+
+  # HTTP istemcisi — interceptor'lar ile token yenileme ve loglama
+  dio: ^5.7.0
+
+  # Değer eşitliği (entity'ler için)
+  equatable: ^2.0.7
+
+  # Tipli model + serialization (json_serializable ile birlikte)
+  json_annotation: ^4.12.0
+
+  # Hafif kalıcılık: sepet, favoriler, tema tercihi (mock modda sipariş/adres)
+  shared_preferences: ^2.3.0
+
+  # Token'ları güvenli saklama (Keychain / Keystore)
+  flutter_secure_storage: ^9.2.2
+
+  # Ürün görselleri için disk cache'li ağ görüntüleri
+  cached_network_image: ^3.4.1
+
+  # ₺ para ve tarih biçimlendirme (tr_TR)
+  intl: ^0.20.2
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.5.0
+  json_serializable: ^6.9.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/data/
