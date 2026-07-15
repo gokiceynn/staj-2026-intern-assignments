@@ -2,7 +2,7 @@
 
 Eski PDF sözleşmesi (`ecommerce_api_contract_v1_detailed.pdf`) ile güncel [`ecommerce_api_contract_v1.3.md`](../../Docs/ecommerce_api_contract_v1.3.md) karşılaştırılmıştır.
 
-PDF'de eksik olan aşağıdaki maddeler güncel v1.3 sözleşmesinde tamamlanmıştır. Frontend artık bu işlemler için local fallback veya varsayımsal endpoint kullanmaz.
+PDF'de eksik olan aşağıdaki maddeler güncel v1.3 sözleşmesinde tamamlanmıştır. Ayrıca **§2.0 Netleştirilmiş kararlar** bölümünde kayıt ve hesap path'leri kesinleştirilmiştir (`POST /auth/customer/register`; `POST /auth/register` kullanılmaz).
 
 | Konu | Güncel durum | Endpointler / karar |
 |---|---|---|

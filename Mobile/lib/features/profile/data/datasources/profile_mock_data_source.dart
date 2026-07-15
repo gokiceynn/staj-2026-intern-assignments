@@ -4,8 +4,8 @@ import '../../../../core/mock/mock_database.dart';
 import '../../../../core/storage/token_store.dart';
 import '../models/address_model.dart';
 
-/// Adres işlemleri — gerçek API'de olduğu gibi kullanıcı kimliği token'dan
-/// çözülür (`/users/me/addresses`).
+/// Adres işlemleri — mock veri. Backend hazır olunca `ProfileRemoteDataSource` ile
+/// `/customer/me/addresses` uçlarına geçilir.
 class ProfileMockDataSource {
   ProfileMockDataSource(this._db, this._tokenStore);
 

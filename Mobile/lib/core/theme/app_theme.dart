@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Design ekibinin token'larıyla eşlenecek renk paleti.
-/// Hepsiburada benzeri marka kimliği: turuncu ana renk + mor vurgu.
+/// VBShop marka kimliği: turuncu ana renk + mor vurgu.
 abstract final class AppColors {
   static const primary = Color(0xFFFF6000);
   static const primaryDark = Color(0xFFDD5300);
