@@ -1,6 +1,7 @@
 # API Endpoint Matrix
 
-Kaynak: `docs/ecommerce_api_contract_v1_detailed.pdf` (v1.0)
+Kaynak: [`Docs/ecommerce_api_contract_v1.3.md`](../../Docs/ecommerce_api_contract_v1.3.md)  
+Netleştirilmiş kararlar: **§2.0** (`POST /auth/customer/register`; `POST /auth/register` kullanılmaz)
 
 Base path: `/api/v1`
 
@@ -19,44 +20,58 @@ type ApiResponse<T> = {
 
 **İstisna:** `GET /photos/{id}` standart JSON zarfı döndürmez; doğrudan binary image stream döner.
 
+## Metadata (`/metadata`)
+
+| Method | Path | Auth | Response `data` |
+|--------|------|------|-----------------|
+| GET | `/metadata/statuses` | Anonim | Sipariş/paket/kargo/ödeme durum etiketleri ve ikonları |
+
 ## Auth (`/auth`)
 
 | Method | Path | Auth | Request | Response `data` |
 |--------|------|------|---------|-----------------|
-| POST | `/auth/register` | Anonim | `email`, `password`, `passwordConfirm`, `firstName`, `lastName`, `phoneNumber` | `{ sessionId, expiresAt }` |
-| POST | `/auth/login` | Anonim | `email`, `password` | `{ accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt, user }` |
+| POST | `/auth/customer/register` | Anonim | `email`, `password`, `passwordConfirm`, `firstName`, `lastName`, `phoneNumber` | `{ sessionId, expiresAt }` |
+| POST | `/auth/seller/register` | Anonim | müşteri alanları + `storeName`, `taxNumber`, `taxOffice` | `{ sessionId, expiresAt }` |
+| POST | `/auth/login` | Anonim | `email`, `password` | `{ accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt, account }` |
 | POST | `/auth/logout` | Korumalı | — | `null` |
 | POST | `/auth/refresh-token` | Kısmi (Bearer + body) | `{ refreshToken }` | `{ accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt }` |
-| POST | `/auth/email/verify` | Anonim | `{ sessionId, code }` | Login ile aynı token + user |
+| POST | `/auth/email/verify` | Anonim | `{ sessionId, code }` | Login ile aynı token + `account` |
 | POST | `/auth/email/resend` | Anonim | `{ email }` | `{ sessionId, expiresAt }` |
 | POST | `/auth/forgot-password` | Anonim | `{ email }` | `{ sessionId, expiresAt }` |
 | POST | `/auth/reset-password` | Anonim | `{ sessionId, code, newPassword, newPasswordConfirm }` | `null` |
 
-### User object (auth responses)
+### Account object (auth responses)
 
-`id`, `email`, `firstName`, `lastName`, `phoneNumber`, `photoId`, `photoUrl`, `createdAt`
+`id`, `email`, `firstName`, `lastName`, `phoneNumber`, `role`, `createdAt`
 
-## Users (`/users`)
+## Account (`/account/me`)
 
 | Method | Path | Auth | Request | Response `data` |
 |--------|------|------|---------|-----------------|
-| GET | `/users/me` | Korumalı | — | User |
-| PUT | `/users/me` | Korumalı | `firstName`, `lastName`, `phoneNumber`, `photoId` | User |
-| PUT | `/users/me/password` | Korumalı | `currentPassword`, `newPassword`, `newPasswordConfirm` | `null` |
-| PUT | `/users/me/email` | Korumalı | `newEmail`, `password` | `{ sessionId, expiresAt }` |
-| POST | `/users/me/email/verify` | Korumalı | `{ sessionId, code }` | `null` |
-| POST | `/users/me/email/resend` | Korumalı | — (PDF body belirtmiyor; session bağlamı backend’de) | `{ sessionId, expiresAt }` |
-| DELETE | `/users/me` | Korumalı | `{ password }` | `null` |
+| GET | `/account/me` | Customer / Seller / Admin | — | Account |
+| PUT | `/account/me` | Customer / Seller / Admin | `firstName`, `lastName`, `phoneNumber` | Account |
+| PUT | `/account/me/password` | Customer / Seller / Admin | `currentPassword`, `newPassword`, `newPasswordConfirm` | `null` |
+| PUT | `/account/me/email` | Customer / Seller / Admin | `newEmail`, `password` | `{ sessionId, expiresAt }` |
+| POST | `/account/me/email/verify` | Customer / Seller / Admin | `{ sessionId, code }` | `null` |
+| POST | `/account/me/email/resend` | Customer / Seller / Admin | `{ password }` | `{ sessionId, expiresAt }` |
 
-## Addresses (`/users/me/addresses`)
+## Customer (`/customer/me`)
+
+| Method | Path | Auth | Request | Response `data` |
+|--------|------|------|---------|-----------------|
+| DELETE | `/customer/me` | Customer | `{ password }` | `null` |
+
+> `GET /customer/me` tanımlı değildir. Profil için `GET /account/me` kullanılır.
+
+## Addresses (`/customer/me/addresses`)
 
 | Method | Path | Auth | Response `data` |
 |--------|------|------|-----------------|
-| GET | `/users/me/addresses` | Korumalı | `Address[]` |
-| GET | `/users/me/addresses/{id}` | Korumalı | `Address` |
-| POST | `/users/me/addresses` | Korumalı | `Address` (201) |
-| PUT | `/users/me/addresses/{id}` | Korumalı | `Address` |
-| DELETE | `/users/me/addresses/{id}` | Korumalı | `null` |
+| GET | `/customer/me/addresses` | Customer | `Address[]` |
+| GET | `/customer/me/addresses/{id}` | Customer | `Address` |
+| POST | `/customer/me/addresses` | Customer | `Address` (201) |
+| PUT | `/customer/me/addresses/{id}` | Customer | `Address` |
+| DELETE | `/customer/me/addresses/{id}` | Customer | `null` |
 
 ### Address object
 
@@ -69,58 +84,63 @@ type ApiResponse<T> = {
 | POST | `/photos` | Korumalı | `multipart/form-data`, field: `file` → `{ photoId, photoUrl, uploadedAt }` |
 | GET | `/photos/{id}` | Anonim | Binary stream (no envelope) |
 
+## Categories (`/categories`)
+
+| Method | Path | Auth | Response `data` |
+|--------|------|------|-----------------|
+| GET | `/categories` | Anonim | Kök kategoriler + recursive `children` |
+
 ## Products (`/products`)
 
 | Method | Path | Auth | Query params |
 |--------|------|------|--------------|
-| GET | `/products` | Anonim | `page`, `size`, `q`, `categoryId`, `minPrice`, `maxPrice`, `sortBy` |
+| GET | `/products` | Anonim | `page`, `size`, `q`, `categoryId`, `sellerId`, `minPrice`, `maxPrice`, `inStock`, `sortBy` |
 | GET | `/products/{id}` | Anonim | — |
 
-### Product list item
+### Product reviews
 
-`id`, `title`, `description`, `price`, `stock`, `photoId`, `photoUrl`, `rating`, `category: { id, name }`
-
-### Product detail (ek alanlar)
-
-`features: Record<string, string>`, `categoryId`
+| Method | Path | Auth |
+|--------|------|------|
+| GET | `/products/{id}/reviews` | Anonim |
+| POST | `/products/{id}/reviews` | Customer |
+| PUT | `/products/{productId}/reviews/{reviewId}` | Customer |
+| DELETE | `/products/{productId}/reviews/{reviewId}` | Customer |
 
 ### Pagination (list responses)
 
 `pageIndex`, `pageSize`, `totalCount`, `totalPages`, `items[]`
 
-PDF örneği `sortBy`: `price_asc`
+`sortBy`: `price_asc`, `price_desc`, `newest`, `rating_desc`
+
+## Favorites (`/favorites`)
+
+| Method | Path | Auth |
+|--------|------|------|
+| GET | `/favorites?page=&size=` | Customer |
+| POST | `/favorites/{productId}` | Customer |
+| DELETE | `/favorites/{productId}` | Customer |
 
 ## Cart (`/cart`)
 
 | Method | Path | Auth | Request | Response |
 |--------|------|------|---------|----------|
-| GET | `/cart` | Korumalı | — | `{ items[], totalAmount }` |
-| POST | `/cart/items` | Korumalı | `{ productId, quantity }` | Full cart |
-| PUT | `/cart/items/{productId}` | Korumalı | `{ quantity }` | Full cart |
-
-### Cart item
-
-`productId`, `productTitle`, `price`, `quantity`, `totalPrice`, `photoId`, `photoUrl`
+| GET | `/cart` | Customer | — | `{ items[], subtotal, totalAmount, currency }` |
+| POST | `/cart/items` | Customer | `{ productId, quantity }` | Full cart |
+| PUT | `/cart/items/{productId}` | Customer | `{ quantity }` | Full cart |
+| DELETE | `/cart/items/{productId}` | Customer | — | Full cart |
+| DELETE | `/cart` | Customer | — | `null` |
 
 ## Payments (`/payments`)
 
 | Method | Path | Auth | Request | Response `data` |
 |--------|------|------|---------|-----------------|
-| POST | `/payments/simulate` | Korumalı | `{ amount, paymentCard }` | `{ transactionId, status, processedAt }` |
+| POST | `/payments/simulate` | Customer | `{ amount, paymentCard }` | `{ transactionId, status, processedAt }` |
 
 ## Orders (`/orders`)
 
 | Method | Path | Auth | Request | Response |
 |--------|------|------|---------|----------|
-| POST | `/orders/checkout` | Korumalı | `{ addressId, paymentCard }` | Order detail |
-| GET | `/orders` | Korumalı | — | Paginated order summaries |
-| GET | `/orders/{id}` | Korumalı | — | Order detail |
-| POST | `/orders/{id}/cancel` | Korumalı | `{ cancelReason }` | `{ orderId, status, cancelledAt }` |
-
-### Order summary item
-
-`orderId`, `orderNumber`, `totalAmount`, `status`, `createdAt`, `itemCount`
-
-### Order detail
-
-`orderId`, `orderNumber`, `totalAmount`, `status`, `createdAt`, `shippingAddress`, `items[]`
+| POST | `/orders/checkout` | Customer | `{ addressId, paymentCard }` + header `Idempotency-Key` | Order detail |
+| GET | `/orders` | Customer | `page`, `size`, `status` | Paginated order summaries |
+| GET | `/orders/{id}` | Customer | — | Order detail |
+| POST | `/orders/{id}/cancel` | Customer | `{ cancelReason }` | `{ orderId, status, cancelledAt }` |

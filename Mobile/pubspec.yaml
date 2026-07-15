@@ -1,5 +1,5 @@
 name: vbshop
-description: "VB10 Staj 2026 — E-Ticaret projesi mobil uygulaması (Hepsiburada benzeri). Flutter + Riverpod + go_router + Dio, Clean Architecture."
+description: "VB10 Staj 2026 — VBShop e-ticaret mobil uygulaması. API v1.3. Flutter + Riverpod + go_router + Dio, Clean Architecture."
 publish_to: 'none'
 version: 1.0.0+1
 
