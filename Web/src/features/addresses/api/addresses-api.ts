@@ -3,19 +3,19 @@ import type { Address } from "@/types/api";
 import type { AddressInput } from "@/features/addresses/schemas/address";
 
 export const addressesApi = {
-  list: () => apiClient<Address[]>("users/me/addresses"),
+  list: () => apiClient<Address[]>("customer/me/addresses"),
 
-  getById: (id: string) => apiClient<Address>(`users/me/addresses/${id}`),
+  getById: (id: string) => apiClient<Address>(`customer/me/addresses/${id}`),
 
   create: (input: AddressInput) =>
-    apiClient<Address>("users/me/addresses", { method: "POST", body: input }),
+    apiClient<Address>("customer/me/addresses", { method: "POST", body: input }),
 
   update: (id: string, input: AddressInput) =>
-    apiClient<Address>(`users/me/addresses/${id}`, {
+    apiClient<Address>(`customer/me/addresses/${id}`, {
       method: "PUT",
       body: input,
     }),
 
   remove: (id: string) =>
-    apiClient<null>(`users/me/addresses/${id}`, { method: "DELETE" }),
+    apiClient<null>(`customer/me/addresses/${id}`, { method: "DELETE" }),
 };

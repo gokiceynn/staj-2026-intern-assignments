@@ -16,7 +16,7 @@ Detaylı teslim ve devralma notları: **[docs/FRONTEND_HANDOFF.md](docs/FRONTEND
 ## Gereksinimler
 
 - Node.js 22+
-- Backend API (`/api/v1`) — bkz. `docs/API_ENDPOINT_MATRIX.md`
+- Backend API (`/api/v1`) — bkz. [`../Docs/ecommerce_api_contract_v1.3.md`](../Docs/ecommerce_api_contract_v1.3.md) ve `docs/API_ENDPOINT_MATRIX.md`
 
 ## Kurulum
 
@@ -46,13 +46,17 @@ Uygulama: [http://localhost:3000](http://localhost:3000)
 
 Detay: `docs/ARCHITECTURE.md`
 
-## API Boşlukları (GAPS)
+## API Sözleşmesi (v1.3)
 
-PDF sözleşmesinde olmayan özellikler için frontend **sahte endpoint üretmez**:
+Güncel kaynak: [`../Docs/ecommerce_api_contract_v1.3.md`](../Docs/ecommerce_api_contract_v1.3.md)
 
-1. **Favoriler** — Yalnızca `development` ortamında `localStorage` (`LocalFavoritesRepository`)
-2. **Kategoriler** — Ürün listesinden türetilir; `categoryId` filtresi API'ye iletilir
-3. **Sepetten silme** — `DELETE` yok; production'da silme devre dışı
+Frontend artık v1.3 endpointlerini kullanır:
+
+- **Favoriler** — `GET/POST/DELETE /favorites`
+- **Kategoriler** — `GET /categories`
+- **Sepet silme** — `DELETE /cart/items/{productId}`, `DELETE /cart`
+- **Hesap** — `GET/PUT /account/me`, adresler `GET/POST/PUT/DELETE /customer/me/addresses`
+- **Kayıt** — `POST /auth/customer/register`
 
 Detay: `docs/API_GAPS.md`
 
