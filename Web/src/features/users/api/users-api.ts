@@ -6,14 +6,14 @@ import type {
 } from "@/features/auth/schemas/auth";
 
 export const usersApi = {
-  getMe: () => apiClient<User>("users/me"),
+  getMe: () => apiClient<User>("account/me"),
 
   updateMe: (input: UpdateProfileInput) =>
-    apiClient<User>("users/me", { method: "PUT", body: input }),
+    apiClient<User>("account/me", { method: "PUT", body: input }),
 
   changePassword: (input: ChangePasswordInput) =>
-    apiClient<null>("users/me/password", { method: "PUT", body: input }),
+    apiClient<null>("account/me/password", { method: "PUT", body: input }),
 
   deleteMe: (password: string) =>
-    apiClient<null>("users/me", { method: "DELETE", body: { password } }),
+    apiClient<null>("customer/me", { method: "DELETE", body: { password } }),
 };

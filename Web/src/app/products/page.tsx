@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useProducts, useDerivedCategories } from "@/features/products/queries/use-products";
+import { useProducts } from "@/features/products/queries/use-products";
+import { useRootCategories } from "@/features/categories/queries/use-categories";
 import { useAddToCart } from "@/features/cart/queries/use-cart";
 import { useToast } from "@/components/ui/toast-context";
 import { parseProductSearchParams } from "@/lib/utils/query-params";
@@ -25,7 +26,7 @@ function ProductsContent() {
 
   const [q, setQ] = useState(params.q ?? "");
   const { data, isLoading, error, refetch } = useProducts(params);
-  const { data: categories } = useDerivedCategories();
+  const { data: categories } = useRootCategories();
   const addToCart = useAddToCart();
   const { showToast } = useToast();
   const [addingId, setAddingId] = useState<string>();

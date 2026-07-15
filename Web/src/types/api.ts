@@ -7,14 +7,17 @@ export type ApiResponse<T> = {
   timestamp: string;
 };
 
+export type UserRole = "Customer" | "Seller" | "Admin";
+
 export type User = {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  photoId: string | null;
-  photoUrl: string | null;
+  role: UserRole;
+  photoId?: string | null;
+  photoUrl?: string | null;
   createdAt: string;
 };
 
@@ -25,7 +28,7 @@ export type AuthTokens = {
   refreshTokenExpiresAt: string;
 };
 
-export type LoginData = AuthTokens & { user: User };
+export type LoginData = AuthTokens & { account: User };
 
 export type OtpSession = {
   sessionId: string;
@@ -45,6 +48,15 @@ export type Address = {
 export type CategoryRef = {
   id: string;
   name: string;
+};
+
+export type Category = CategoryRef & {
+  slug: string;
+  iconId: string | null;
+  iconUrl: string | null;
+  parentCategoryId: string | null;
+  productCount: number;
+  children: Category[];
 };
 
 export type ProductListItem = {
@@ -83,16 +95,21 @@ export type Paginated<T> = {
 export type CartItem = {
   productId: string;
   productTitle: string;
+  sellerId?: string;
+  sellerName?: string;
   price: number;
   quantity: number;
   totalPrice: number;
+  stock?: number;
   photoId: string;
   photoUrl: string;
 };
 
 export type Cart = {
   items: CartItem[];
+  subtotal?: number;
   totalAmount: number;
+  currency?: string;
 };
 
 export type PaymentCard = {

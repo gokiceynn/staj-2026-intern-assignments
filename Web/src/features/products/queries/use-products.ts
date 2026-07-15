@@ -21,18 +21,3 @@ export function useProduct(id: string) {
     staleTime: 60_000,
   });
 }
-
-export function useDerivedCategories() {
-  return useQuery({
-    queryKey: queryKeys.products.categories,
-    queryFn: async () => {
-      const result = await productsApi.list({ page: 1, size: 100 });
-      const map = new Map<string, string>();
-      for (const item of result.items) {
-        map.set(item.category.id, item.category.name);
-      }
-      return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
-    },
-    staleTime: 300_000,
-  });
-}

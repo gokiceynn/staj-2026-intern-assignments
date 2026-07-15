@@ -7,7 +7,7 @@ import { CategoryNav } from "@/components/layout/CategoryNav";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useCurrentUser, useLogout } from "@/features/auth/queries/use-auth";
 import { useCartItemCount } from "@/features/cart/queries/use-cart";
-import { useDerivedCategories } from "@/features/products/queries/use-products";
+import { useRootCategories } from "@/features/categories/queries/use-categories";
 import { useToast } from "@/components/ui/toast-context";
 import {
   SearchIcon,
@@ -27,7 +27,7 @@ function HeaderContent() {
   const { data: user } = useCurrentUser();
   const logout = useLogout();
   const cartCount = useCartItemCount();
-  const { data: categories } = useDerivedCategories();
+  const { data: categories } = useRootCategories();
   const { showToast } = useToast();
 
   const handleSearch = (e: FormEvent) => {

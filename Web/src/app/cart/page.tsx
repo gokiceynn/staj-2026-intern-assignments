@@ -3,7 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCart, useUpdateCartItem } from "@/features/cart/queries/use-cart";
+import {
+  useCart,
+  useUpdateCartItem,
+  useRemoveCartItem,
+  useClearCart,
+} from "@/features/cart/queries/use-cart";
 import { Price } from "@/components/ui/Price";
 import { QuantitySelector } from "@/components/ui/QuantitySelector";
 import { Button } from "@/components/ui/Button";
@@ -13,12 +18,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/toast-context";
 import { ApiError } from "@/lib/api/envelope";
 
-const isProduction = process.env.NODE_ENV === "production";
-
 export default function CartPage() {
   const router = useRouter();
   const { data: cart, isLoading, error, refetch } = useCart();
   const updateItem = useUpdateCartItem();
+  const removeItem = useRemoveCartItem();
+  const clearCart = useClearCart();
   const { showToast } = useToast();
 
   if (isLoading) {
@@ -64,9 +69,43 @@ export default function CartPage() {
     }
   };
 
+  const handleRemove = async (productId: string) => {
+    try {
+      await removeItem.mutateAsync(productId);
+      showToast("Ürün sepetten kaldırıldı", "success");
+    } catch (err) {
+      showToast(
+        err instanceof ApiError ? err.message : "Ürün kaldırılamadı",
+        "error",
+      );
+    }
+  };
+
+  const handleClearCart = async () => {
+    try {
+      await clearCart.mutateAsync();
+      showToast("Sepet temizlendi", "success");
+    } catch (err) {
+      showToast(
+        err instanceof ApiError ? err.message : "Sepet temizlenemedi",
+        "error",
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Sepetim</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Sepetim</h1>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleClearCart}
+          loading={clearCart.isPending}
+        >
+          Sepeti Temizle
+        </Button>
+      </div>
 
       <div className="space-y-4">
         {cart.items.map((item) => (
@@ -91,17 +130,20 @@ export default function CartPage() {
                 {item.productTitle}
               </Link>
               <Price amount={item.price} size="sm" />
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <QuantitySelector
                   value={item.quantity}
                   onChange={(q) => handleQuantityChange(item.productId, q)}
                   disabled={updateItem.isPending}
                 />
-                {!isProduction && (
-                  <span className="text-xs text-text-muted">
-                    API sözleşmesinde sepetten silme yok
-                  </span>
-                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemove(item.productId)}
+                  loading={removeItem.isPending}
+                >
+                  Kaldır
+                </Button>
               </div>
             </div>
             <div className="text-right">
