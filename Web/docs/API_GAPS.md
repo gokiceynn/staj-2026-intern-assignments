@@ -1,50 +1,25 @@
 # API Gaps
 
-PDF sözleşmesi (`ecommerce_api_contract_v1_detailed.pdf`) yeniden doğrulandı. Aşağıdaki özellikler **sözleşmede yoktur**; frontend bu nedenle gerçek backend endpoint’i uydurmaz.
+Eski PDF sözleşmesi (`ecommerce_api_contract_v1_detailed.pdf`) ile güncel [`ecommerce_api_contract_v1.3.md`](../../Docs/ecommerce_api_contract_v1.3.md) karşılaştırılmıştır.
 
-## 1. Favoriler
+PDF'de eksik olan aşağıdaki maddeler güncel v1.3 sözleşmesinde tamamlanmıştır. Frontend artık bu işlemler için local fallback veya varsayımsal endpoint kullanmaz.
 
-**Durum:** PDF’de favori ekleme/çıkarma/listeleme endpoint’i **yok**.
+| Konu | Güncel durum | Endpointler / karar |
+|---|---|---|
+| Favoriler | Tamamlandı | `GET /favorites`, `POST /favorites/{productId}`, `DELETE /favorites/{productId}` |
+| Kategoriler | Tamamlandı | `GET /categories`; kategoriler recursive `children` ağacı ve `parentCategoryId` ile döner |
+| Sepetten ürün silme | Tamamlandı | `DELETE /cart/items/{productId}` |
+| Ürün yorumları | Tamamlandı | Yorum listeleme, ekleme, güncelleme ve silme endpointleri eklendi |
+| Admin paneli | Tamamlandı | Dashboard ve salt okunur kullanıcı/satıcı/sipariş endpointleri; kargo firması CRUD |
+| Profil e-posta resend body | Netleştirildi | `POST /account/me/email/resend` request body: `{ "password": "..." }` |
 
-**Frontend stratejisi:**
-- `FavoritesRepository` soyut arayüzü tanımlanır.
-- Yalnızca `development` ortamında `localStorage` tabanlı `LocalFavoritesRepository` kullanılır.
-- Production’da favori UI gösterilir ancak kalıcılık backend gelene kadar dev-only fallback ile sınırlıdır; README’de açıkça belirtilir.
+## Ürün yorum endpointleri
 
-## 2. Kategori listeleme endpoint’i
+- `GET /products/{id}/reviews`
+- `POST /products/{id}/reviews`
+- `PUT /products/{productId}/reviews/{reviewId}`
+- `DELETE /products/{productId}/reviews/{reviewId}`
 
-**Durum:** Ayrı `GET /categories` endpoint’i **yok**.
+## Sonuç
 
-**Frontend stratejisi:**
-- Ürün listesi cevaplarındaki `category: { id, name }` alanlarından türetilmiş filtre seçenekleri kullanılır.
-- Bu yöntem **tüm kategorileri garanti etmez** (yalnızca listelenen/önbellekteki ürünlerden türetilir).
-- Kategori filtresi `categoryId` query parametresi ile API’ye iletilir (PDF’de tanımlı).
-
-## 3. Sepetten ürün silme
-
-**Durum:** `DELETE /cart/items/{productId}` veya eşdeğeri **yok**. Yalnızca:
-- `POST /cart/items` (ekle/artır)
-- `PUT /cart/items/{productId}` (miktar set)
-
-**Frontend stratejisi:**
-- `quantity=0` varsayımı **yapılmaz**.
-- Silme butonu production’da **devre dışı** veya açıklayıcı mesajla gizlenir.
-- Development ortamında izole fallback: kullanıcıya “API sözleşmesinde silme yok” uyarısı gösterilir; var olmayan DELETE çağrısı **yapılmaz**.
-
-## 4. Ürün yorumları
-
-**Durum:** Mobil taslakta `/products/{id}/reviews` vardı; **PDF sözleşmesinde yok**.
-
-**Frontend stratejisi:** Yorum UI’si implement edilmez.
-
-## 5. Admin paneli
-
-**Durum:** PDF’de admin endpoint’leri **yok**.
-
-**Frontend stratejisi:** Admin sayfaları kapsam dışı.
-
-## 6. E-posta resend (profil) request body
-
-**Durum:** `POST /users/me/email/resend` için PDF request body örneği eksik; yalnızca response gösterilmiş.
-
-**Frontend stratejisi:** Boş body veya backend ekibinin netleştirmesini bekleyen minimal çağrı; hata durumunda kullanıcıya genel mesaj.
+Bu listedeki açık maddelerin tamamı güncel v1.3 API sözleşmesinde karşılanmıştır.
