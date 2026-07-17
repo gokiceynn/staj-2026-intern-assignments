@@ -30,4 +30,7 @@ export const queryKeys = {
       ["favorites", "list", params] as const,
     ids: ["favorites", "ids"] as const,
   },
+  ai: {
+    status: ["ai", "status"] as const,
+  },
 };
