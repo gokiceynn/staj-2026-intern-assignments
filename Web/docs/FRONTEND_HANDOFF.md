@@ -4,7 +4,8 @@ Bu belge, VBShop projesine sonradan katılan bir ekip arkadaşının **Web/** (f
 
 Kaynak sözleşme: [`Docs/ecommerce_api_contract_v1.3.md`](../../Docs/ecommerce_api_contract_v1.3.md)  
 Endpoint matrisi: `docs/API_ENDPOINT_MATRIX.md`  
-Mimari özet: `docs/ARCHITECTURE.md`
+Mimari özet: `docs/ARCHITECTURE.md`  
+**AI asistan rehberi:** `docs/AI_ASISTAN_EKIP_NOTU.md`
 
 ---
 
@@ -116,7 +117,7 @@ Detay: `docs/API_GAPS.md`
 
 1. Backend kapalıysa ürün/auth hata gösterir (beklenen).
 2. macOS port 5000 AirPlay çakışması olabilir.
-3. Dev sunucu: `rm -rf .next && npm run dev`
+3. Dev sunucu CSS bozulursa: `npm run dev:reset`
 
 ---
 
@@ -145,7 +146,8 @@ npm run dev
 
 | Komut | Açıklama |
 |-------|----------|
-| `npm run dev` | Geliştirme |
+| `npm run dev` | Geliştirme (port 3000) |
+| `npm run dev:reset` | Cache temizle + tek sunucu başlat |
 | `npm run build` | Production build |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript |
