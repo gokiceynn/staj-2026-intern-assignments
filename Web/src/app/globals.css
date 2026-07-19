@@ -54,4 +54,84 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  @keyframes leaf-sway {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(2.5deg);
+    }
+    50% {
+      transform: rotate(-1deg);
+    }
+    75% {
+      transform: rotate(1.8deg);
+    }
+  }
+
+  @keyframes leaf-sway-alt {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    30% {
+      transform: rotate(-2deg);
+    }
+    55% {
+      transform: rotate(1.2deg);
+    }
+    80% {
+      transform: rotate(-1.5deg);
+    }
+  }
+
+  .leaf-sway {
+    animation: leaf-sway 4.2s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .leaf-sway--alt {
+    animation: leaf-sway-alt 5s ease-in-out infinite;
+  }
+
+  .leaf-sway--slow {
+    animation-duration: 5.8s;
+  }
+
+  .leaf-sway--delay-1 {
+    animation-delay: -0.9s;
+  }
+
+  .leaf-sway--delay-2 {
+    animation-delay: -1.8s;
+  }
+
+  .leaf-sway--delay-3 {
+    animation-delay: -2.6s;
+  }
+
+  .leaf-sway--origin-tl {
+    transform-origin: top left;
+  }
+
+  .leaf-sway--origin-tr {
+    transform-origin: top right;
+  }
+
+  .leaf-sway--origin-bl {
+    transform-origin: bottom left;
+  }
+
+  .leaf-sway--origin-br {
+    transform-origin: bottom right;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-sway,
+    .leaf-sway--alt {
+      animation: none;
+    }
+  }
 }
