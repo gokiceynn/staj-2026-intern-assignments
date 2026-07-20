@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { BackendNoticeBanner } from "@/components/layout/BackendNoticeBanner";
 import { Footer } from "@/components/layout/Footer";
 import { AiAssistant } from "@/components/ai/AiAssistant";
+import { WelcomeCampaignModal } from "@/components/campaign/WelcomeCampaignModal";
 import { ToastContainer } from "@/components/ui/Toast";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <WelcomeCampaignModal />
           <AiAssistant />
           <ToastContainer />
         </Providers>
