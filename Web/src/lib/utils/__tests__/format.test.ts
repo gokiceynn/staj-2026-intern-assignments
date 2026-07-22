@@ -15,4 +15,10 @@ describe("formatDate", () => {
     expect(result).toBeTruthy();
     expect(typeof result).toBe("string");
   });
+
+  it("geçersiz veya boş değerde fallback döner", () => {
+    expect(formatDate(undefined)).toBe("—");
+    expect(formatDate("")).toBe("—");
+    expect(formatDate("invalid")).toBe("—");
+  });
 });

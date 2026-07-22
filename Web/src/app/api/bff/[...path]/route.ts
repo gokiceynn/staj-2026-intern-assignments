@@ -34,6 +34,8 @@ async function forward(
   const headers = new Headers();
   const contentType = request.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
+  const idempotencyKey = request.headers.get("idempotency-key");
+  if (idempotencyKey) headers.set("Idempotency-Key", idempotencyKey);
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
 
   const body =
@@ -87,7 +89,14 @@ async function toNextResponse(
 }
 
 function unauthorizedResponse(): NextResponse {
-  const res = NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  const res = NextResponse.json(
+    {
+      isSuccess: false,
+      message: "Bu işlem için giriş yapmalısınız",
+      code: 401,
+    },
+    { status: 401 },
+  );
   res.cookies.delete(ACCESS_TOKEN_COOKIE);
   res.cookies.delete(REFRESH_TOKEN_COOKIE);
   return res;

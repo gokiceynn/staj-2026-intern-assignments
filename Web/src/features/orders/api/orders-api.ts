@@ -1,4 +1,6 @@
 import { apiClient } from "@/lib/api/client";
+import { normalizePaginated } from "@/lib/api/pagination";
+import { withPhotoUrls } from "@/lib/utils/photo-url";
 import type {
   OrderDetail,
   OrderSummary,
@@ -10,17 +12,27 @@ import type {
   CheckoutInput,
 } from "@/features/orders/schemas/order";
 
+function mapOrderDetail(order: OrderDetail): OrderDetail {
+  return { ...order, items: withPhotoUrls(order.items) };
+}
+
 export const ordersApi = {
-  list: (params?: { page?: number; size?: number }) =>
-    apiClient<Paginated<OrderSummary>>("orders", { params }),
+  list: async (params?: { page?: number; size?: number }): Promise<Paginated<OrderSummary>> =>
+    normalizePaginated<OrderSummary>(
+      await apiClient<unknown>("orders", { params }),
+    ),
 
-  getById: (id: string) => apiClient<OrderDetail>(`orders/${id}`),
+  getById: async (id: string) =>
+    mapOrderDetail(await apiClient<OrderDetail>(`orders/${id}`)),
 
-  checkout: (input: CheckoutInput) =>
-    apiClient<OrderDetail>("orders/checkout", {
+  checkout: (input: CheckoutInput) => {
+    const idempotencyKey = crypto.randomUUID().replace(/-/g, "");
+    return apiClient<OrderDetail>("orders/checkout", {
       method: "POST",
       body: input,
-    }),
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  },
 
   cancel: (id: string, input: CancelOrderInput) =>
     apiClient<{ orderId: string; status: string; cancelledAt: string }>(

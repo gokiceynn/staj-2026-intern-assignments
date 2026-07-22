@@ -1,4 +1,6 @@
 import { apiClient } from "@/lib/api/client";
+import { normalizePaginated } from "@/lib/api/pagination";
+import { withPhotoUrl, withPhotoUrls } from "@/lib/utils/photo-url";
 import type {
   Paginated,
   ProductDetail,
@@ -8,10 +10,15 @@ import type {
 import { buildProductQueryParams } from "@/lib/utils/query-params";
 
 export const productsApi = {
-  list: (params: ProductQueryParams = {}) =>
-    apiClient<Paginated<ProductListItem>>("products", {
-      params: buildProductQueryParams(params),
-    }),
+  list: async (params: ProductQueryParams = {}): Promise<Paginated<ProductListItem>> => {
+    const page = normalizePaginated<ProductListItem>(
+      await apiClient<unknown>("products", {
+        params: buildProductQueryParams(params),
+      }),
+    );
+    return { ...page, items: withPhotoUrls(page.items) };
+  },
 
-  getById: (id: string) => apiClient<ProductDetail>(`products/${id}`),
+  getById: async (id: string) =>
+    withPhotoUrl(await apiClient<ProductDetail>(`products/${id}`)),
 };

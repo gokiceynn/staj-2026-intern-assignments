@@ -142,6 +142,24 @@ function HeaderContent() {
                         >
                           Adreslerim
                         </Link>
+                        {user.role === "Seller" && (
+                          <Link
+                            href="/seller"
+                            className="block px-4 py-2.5 text-sm hover:bg-surface-muted"
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            Satıcı Paneli
+                          </Link>
+                        )}
+                        {user.role === "Admin" && (
+                          <Link
+                            href="/admin"
+                            className="block px-4 py-2.5 text-sm hover:bg-surface-muted"
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            Admin Paneli
+                          </Link>
+                        )}
                         <button
                           type="button"
                           className="block w-full px-4 py-2.5 text-left text-sm text-danger hover:bg-surface-muted"
@@ -165,6 +183,13 @@ function HeaderContent() {
                           onClick={() => setMenuOpen(false)}
                         >
                           Kayıt Ol
+                        </Link>
+                        <Link
+                          href="/register/seller"
+                          className="block px-4 py-2.5 text-sm hover:bg-surface-muted"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Satıcı Kaydı
                         </Link>
                       </>
                     )}

@@ -1,23 +1,42 @@
 import { z } from "zod";
+import { normalizePhoneNumber } from "@/lib/utils/phone";
+
+const passwordRules = z
+  .string()
+  .min(12, "Şifre en az 12 karakter olmalı")
+  .max(128, "Şifre en fazla 128 karakter olabilir")
+  .regex(/[A-Z]/, "En az bir büyük harf gerekli")
+  .regex(/[a-z]/, "En az bir küçük harf gerekli")
+  .regex(/[0-9]/, "En az bir rakam gerekli");
 
 export const loginSchema = z.object({
   email: z.string().email("Geçerli bir e-posta girin"),
   password: z.string().min(1, "Şifre gerekli"),
 });
 
+const registerFields = {
+  email: z.string().email("Geçerli bir e-posta girin"),
+  password: passwordRules,
+  passwordConfirm: z.string().min(1, "Şifre tekrarı gerekli"),
+  firstName: z.string().min(1, "Ad gerekli"),
+  lastName: z.string().min(1, "Soyad gerekli"),
+  phoneNumber: z
+    .string()
+    .min(10, "Geçerli telefon numarası girin")
+    .transform(normalizePhoneNumber)
+    .refine((value) => /^\+[1-9][0-9]{7,14}$/.test(value), {
+      message: "Telefon +905551234567 formatında olmalı",
+    }),
+};
+
+const passwordMatchRefine = {
+  message: "Şifreler eşleşmiyor",
+  path: ["passwordConfirm"],
+};
+
 export const registerSchema = z
-  .object({
-    email: z.string().email("Geçerli bir e-posta girin"),
-    password: z.string().min(8, "Şifre en az 8 karakter olmalı"),
-    passwordConfirm: z.string().min(1, "Şifre tekrarı gerekli"),
-    firstName: z.string().min(1, "Ad gerekli"),
-    lastName: z.string().min(1, "Soyad gerekli"),
-    phoneNumber: z.string().min(10, "Geçerli telefon numarası girin"),
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    message: "Şifreler eşleşmiyor",
-    path: ["passwordConfirm"],
-  });
+  .object(registerFields)
+  .refine((data) => data.password === data.passwordConfirm, passwordMatchRefine);
 
 export const verifyEmailSchema = z.object({
   sessionId: z.string().min(1),
@@ -58,8 +77,32 @@ export const changePasswordSchema = z
     path: ["newPasswordConfirm"],
   });
 
+export const registerSellerSchema = z
+  .object({
+    ...registerFields,
+    storeName: z.string().min(1, "Mağaza adı gerekli").max(160),
+    taxNumber: z
+      .string()
+      .regex(/^[0-9]{10,11}$/, "Vergi numarası 10-11 haneli olmalı"),
+    taxOffice: z.string().min(1, "Vergi dairesi gerekli").max(120),
+  })
+  .refine((data) => data.password === data.passwordConfirm, passwordMatchRefine);
+
+export const changeEmailSchema = z.object({
+  newEmail: z.string().email("Geçerli bir e-posta girin"),
+  password: z.string().min(1, "Şifre gerekli"),
+});
+
+export const verifyEmailChangeSchema = z.object({
+  sessionId: z.string().min(1),
+  code: z.string().min(4, "Doğrulama kodu gerekli"),
+});
+
+export type ChangeEmailInput = z.infer<typeof changeEmailSchema>;
+export type VerifyEmailChangeInput = z.infer<typeof verifyEmailChangeSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type RegisterSellerInput = z.infer<typeof registerSellerSchema>;
 export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

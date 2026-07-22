@@ -14,6 +14,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/toast-context";
 import { ApiError } from "@/lib/api/envelope";
+import { ProductReviews } from "@/components/product/ProductReviews";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
@@ -116,6 +117,8 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      <ProductReviews productId={product.id} />
     </div>
   );
 }

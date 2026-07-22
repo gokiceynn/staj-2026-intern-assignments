@@ -47,14 +47,19 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, ILogger<OutboxP
             try
             {
                 await dispatcher.DispatchAsync(item, ct);
-                item.Status = OutboxStatus.Completed; item.ProcessedAtUtc = DateTime.UtcNow; item.LockId = null; item.LockedUntilUtc = null;
+                item.Status = OutboxStatus.Completed;
+                item.ProcessedAtUtc = DateTime.UtcNow;
+                item.LockId = null;
+                item.LockedUntilUtc = null;
             }
             catch (Exception ex)
             {
-                item.AttemptCount++; item.LastError = ex.GetType().Name;
+                item.AttemptCount++;
+                item.LastError = ex.GetType().Name;
                 item.Status = item.AttemptCount >= 10 ? OutboxStatus.DeadLetter : OutboxStatus.Pending;
                 item.NextAttemptAtUtc = DateTime.UtcNow.AddSeconds(Math.Min(3600, Math.Pow(2, item.AttemptCount)));
-                item.LockId = null; item.LockedUntilUtc = null;
+                item.LockId = null;
+                item.LockedUntilUtc = null;
             }
             await db.SaveChangesAsync(ct);
         }
