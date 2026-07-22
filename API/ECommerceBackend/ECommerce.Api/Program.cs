@@ -99,5 +99,12 @@ if (app.Environment.IsDevelopment())
     if (app.Configuration.GetValue<bool>("SeedOnStartup"))
         await scope.ServiceProvider.GetRequiredService<DatabaseSeeder>().SeedAsync(CancellationToken.None);
 }
+
+// İlk admin hesabı: Seed:Admin:Email doluysa her ortamda idempotent olarak açılır.
+// Kayıt uçlarından admin oluşturulamadığı için sisteme ilk admin bu yoldan girer.
+// Şemanın hazır olduğu varsayılır; Production'da migration bundle deploy adımında uygulanır.
+using (IServiceScope adminScope = app.Services.CreateScope())
+    await adminScope.ServiceProvider.GetRequiredService<DatabaseSeeder>().SeedAdminAsync(CancellationToken.None);
+
 await app.RunAsync();
 public partial class Program;

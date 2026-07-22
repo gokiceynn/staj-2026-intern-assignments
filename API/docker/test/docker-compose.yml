@@ -64,6 +64,11 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       TZ: ${TZ}
       SeedOnStartup: ${SeedOnStartup}
+      Seed__Admin__Email: ${Seed__Admin__Email}
+      Seed__Admin__Password: ${Seed__Admin__Password}
+      Seed__Admin__FirstName: ${Seed__Admin__FirstName}
+      Seed__Admin__LastName: ${Seed__Admin__LastName}
+      Seed__Admin__PhoneNumber: ${Seed__Admin__PhoneNumber}
       ConnectionStrings__MySql: ${ConnectionStrings__MySql}
       Redis__ConnectionString: ${Redis__ConnectionString}
       Redis__InstancePrefix: ${Redis__InstancePrefix}

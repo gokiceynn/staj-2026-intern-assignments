@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddOptions<OtpOptions>().Bind(configuration.GetSection(OtpOptions.SectionName)).ValidateOnStart();
         services.AddOptions<StorageOptions>().Bind(configuration.GetSection(StorageOptions.SectionName)).ValidateOnStart();
         services.AddOptions<SmtpOptions>().Bind(configuration.GetSection(SmtpOptions.SectionName)).ValidateOnStart();
+        services.AddOptions<AdminSeedOptions>().Bind(configuration.GetSection(AdminSeedOptions.SectionName)).ValidateOnStart();
 
         string mySql = configuration.GetConnectionString("MySql") ?? throw new InvalidOperationException("MySql connection string is missing.");
         services.AddScoped<EntityAuditInterceptor>();
