@@ -7,6 +7,7 @@ import {
 import { refreshAccessToken } from "@/lib/auth/refresh-manager";
 import { getServerApiBaseUrl } from "@/lib/api/config";
 import { parseApiResponse } from "@/lib/api/envelope";
+import { normalizeAccountPayload } from "@/lib/auth/normalize-account";
 import type { AuthTokens, User } from "@/types/api";
 
 export async function getAccessToken(): Promise<string | undefined> {
@@ -93,7 +94,9 @@ export async function getCurrentUser(): Promise<User | null> {
   if (!access) return null;
 
   try {
-    return await fetchWithAuth<User>("/account/me");
+    return normalizeAccountPayload(
+      await fetchWithAuth<{ account: User }>("/account/me"),
+    );
   } catch {
     return null;
   }

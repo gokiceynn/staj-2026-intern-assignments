@@ -15,12 +15,14 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/toast-context";
 import { ApiError } from "@/lib/api/envelope";
 import { ProductReviews } from "@/components/product/ProductReviews";
+import { HeartIcon } from "@/components/ui/icons";
+import { cn } from "@/lib/utils/cn";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
   const { data: product, isLoading, error, refetch } = useProduct(params.id);
   const addToCart = useAddToCart();
-  const { toggle, has, isAvailable } = useFavorites();
+  const { toggle, has, isAvailable, isPending } = useFavorites();
   const { showToast } = useToast();
   const [quantity, setQuantity] = useState(1);
 
@@ -53,13 +55,17 @@ export default function ProductDetailPage() {
       await addToCart.mutateAsync({
         productId: product.id,
         quantity,
+        product: {
+          productTitle: product.title,
+          price: product.price,
+          photoUrl: product.photoUrl,
+          photoId: product.photoId,
+          stock: product.stock,
+        },
       });
       showToast("Ürün sepete eklendi", "success");
-    } catch (err) {
-      showToast(
-        err instanceof ApiError ? err.message : "Sepete eklenemedi",
-        "error",
-      );
+    } catch {
+      // Hata toast'ı useAddToCart içinde gösteriliyor
     }
   };
 
@@ -111,8 +117,19 @@ export default function ProductDetailPage() {
             Sepete Ekle
           </Button>
           {isAvailable && (
-            <Button variant="outline" onClick={() => toggle(product.id)}>
-              {has(product.id) ? "♥ Favoride" : "♡ Favorile"}
+            <Button
+              variant="outline"
+              onClick={() => toggle(product.id)}
+              disabled={isPending}
+              className={cn(
+                has(product.id) &&
+                  "border-red-500 text-red-500 hover:border-red-600 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30",
+              )}
+            >
+              <span className="inline-flex items-center gap-2">
+                <HeartIcon className="h-4 w-4" filled={has(product.id)} />
+                {has(product.id) ? "Favorilerden çıkar" : "Favorilere ekle"}
+              </span>
             </Button>
           )}
         </div>

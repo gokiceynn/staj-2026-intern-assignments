@@ -61,11 +61,8 @@ export default function CartPage() {
   const handleQuantityChange = async (productId: string, quantity: number) => {
     try {
       await updateItem.mutateAsync({ productId, input: { quantity } });
-    } catch (err) {
-      showToast(
-        err instanceof ApiError ? err.message : "Güncellenemedi",
-        "error",
-      );
+    } catch {
+      // Hata toast'ı hook içinde gösteriliyor
     }
   };
 
@@ -73,11 +70,8 @@ export default function CartPage() {
     try {
       await removeItem.mutateAsync(productId);
       showToast("Ürün sepetten kaldırıldı", "success");
-    } catch (err) {
-      showToast(
-        err instanceof ApiError ? err.message : "Ürün kaldırılamadı",
-        "error",
-      );
+    } catch {
+      // Hata toast'ı hook içinde gösteriliyor
     }
   };
 
@@ -85,11 +79,8 @@ export default function CartPage() {
     try {
       await clearCart.mutateAsync();
       showToast("Sepet temizlendi", "success");
-    } catch (err) {
-      showToast(
-        err instanceof ApiError ? err.message : "Sepet temizlenemedi",
-        "error",
-      );
+    } catch {
+      // Hata toast'ı hook içinde gösteriliyor
     }
   };
 
@@ -97,12 +88,7 @@ export default function CartPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Sepetim</h1>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleClearCart}
-          loading={clearCart.isPending}
-        >
+        <Button variant="ghost" size="sm" onClick={handleClearCart}>
           Sepeti Temizle
         </Button>
       </div>
@@ -134,13 +120,11 @@ export default function CartPage() {
                 <QuantitySelector
                   value={item.quantity}
                   onChange={(q) => handleQuantityChange(item.productId, q)}
-                  disabled={updateItem.isPending}
                 />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleRemove(item.productId)}
-                  loading={removeItem.isPending}
                 >
                   Kaldır
                 </Button>

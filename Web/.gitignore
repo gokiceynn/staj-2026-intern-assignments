@@ -12,6 +12,7 @@ build/
 coverage/
 playwright-report/
 test-results/
+lighthouse-reports/
 
 # Env
 .env

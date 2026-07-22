@@ -44,7 +44,7 @@ export default function FavoritesPage() {
           }
         />
       ) : (
-        <ProductGrid products={items} loading={isLoading} />
+        <ProductGrid products={items} loading={isLoading} showRemoveFavorite />
       )}
     </div>
   );

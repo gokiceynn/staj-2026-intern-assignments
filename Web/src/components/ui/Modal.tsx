@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/Button";
 
@@ -13,6 +13,8 @@ type ModalProps = {
 };
 
 export function Modal({ open, onClose, title, children, className }: ModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -20,6 +22,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
     };
     document.addEventListener("keydown", handler);
     document.body.style.overflow = "hidden";
+    dialogRef.current?.focus();
     return () => {
       document.removeEventListener("keydown", handler);
       document.body.style.overflow = "";
@@ -30,17 +33,20 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
+      <button
+        type="button"
         className="absolute inset-0 bg-black/50"
         onClick={onClose}
-        aria-hidden
+        aria-label="Dialogu kapat"
       />
       <div
+        ref={dialogRef}
         role="dialog"
-        aria-modal
+        aria-modal="true"
         aria-labelledby="modal-title"
+        tabIndex={-1}
         className={cn(
-          "relative z-10 w-full max-w-md rounded-lg bg-surface p-6 shadow-md",
+          "relative z-10 w-full max-w-md rounded-lg bg-surface p-6 shadow-md outline-none",
           className,
         )}
       >

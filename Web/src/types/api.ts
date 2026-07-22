@@ -1,3 +1,7 @@
+/**
+ * Frontend domain tipleri (elle bakım).
+ * Backend istek modelleri için otomatik tipler: `src/types/openapi.ts` / `npm run generate:types`
+ */
 export type ApiResponse<T> = {
   data: T | null;
   isSuccess: boolean;
@@ -62,12 +66,19 @@ export type Category = CategoryRef & {
 export type ProductListItem = {
   id: string;
   title: string;
+  brand?: string;
   description: string;
   price: number;
+  originalPrice?: number | null;
   stock: number;
   photoId: string;
   photoUrl: string;
   rating: number;
+  reviewCount?: number;
+  freeShipping?: boolean;
+  seller?: string;
+  isFlashDeal?: boolean;
+  isFeatured?: boolean;
   category: CategoryRef;
 };
 
@@ -164,6 +175,8 @@ export type ProductQueryParams = {
   minPrice?: number;
   maxPrice?: number;
   sortBy?: ProductSortBy;
+  flashDealsOnly?: boolean;
+  featuredOnly?: boolean;
 };
 
 export type ReviewPhoto = { photoId: string };

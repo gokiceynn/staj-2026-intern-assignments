@@ -27,7 +27,7 @@ export function PetDealBanner() {
   };
 
   return (
-    <div className="rounded-xl border border-brand-300 bg-gradient-to-r from-brand-50 via-orange-50 to-amber-50 p-5 shadow-card md:p-6">
+    <div className="rounded-xl border border-brand-300 bg-gradient-to-r from-brand-50 via-orange-50 to-amber-50 p-5 shadow-card dark:border-brand-700/50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
@@ -47,7 +47,7 @@ export function PetDealBanner() {
             İndirim kodunuz
           </span>
           <div className="flex items-center gap-2">
-            <code className="rounded-lg border border-brand-300 bg-white px-4 py-2 text-lg font-bold tracking-wider text-brand-600">
+            <code className="rounded-lg border border-border bg-surface px-4 py-2 text-lg font-bold tracking-wider text-brand-600 dark:text-brand-200">
               {PET_DEAL_CAMPAIGN.code}
             </code>
             <Button type="button" variant="outline" size="sm" onClick={copyCode}>

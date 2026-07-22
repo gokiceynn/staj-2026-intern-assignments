@@ -40,7 +40,7 @@ export function parseProductSearchParams(
     page: get("page") ? Number(get("page")) : 1,
     size: get("size") ? Number(get("size")) : 12,
     q: get("q") || undefined,
-    categoryId: get("categoryId") || undefined,
+    categoryId: get("categoryId") || get("category") || undefined,
     minPrice: get("minPrice") ? Number(get("minPrice")) : undefined,
     maxPrice: get("maxPrice") ? Number(get("maxPrice")) : undefined,
     sortBy,

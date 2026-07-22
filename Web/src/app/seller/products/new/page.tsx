@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/toast-context";
 import { ApiError, getFieldErrors } from "@/lib/api/envelope";
+import { ProductPhotoPicker } from "@/components/seller/ProductPhotoPicker";
 
 const productSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
@@ -31,6 +33,7 @@ export default function NewProductPage() {
   const createProduct = useCreateSellerProduct();
   const { data: categories, isLoading: categoriesLoading } = useRootCategories();
   const { showToast } = useToast();
+  const [photoIds, setPhotoIds] = useState<string[]>([]);
 
   const {
     register,
@@ -43,6 +46,11 @@ export default function NewProductPage() {
   });
 
   const onSubmit = async (data: ProductFormInput) => {
+    if (photoIds.length === 0) {
+      showToast("En az 1 ürün fotoğrafı ekleyin", "error");
+      return;
+    }
+
     let features: Record<string, string> = {};
     if (data.featuresJson?.trim()) {
       try {
@@ -60,7 +68,7 @@ export default function NewProductPage() {
         price: data.price,
         stock: data.stock,
         categoryId: data.categoryId,
-        photoIds: [],
+        photoIds,
         features,
         isActive: data.isActive,
       });
@@ -135,6 +143,7 @@ export default function NewProductPage() {
           error={errors.categoryId?.message}
           {...register("categoryId")}
         />
+        <ProductPhotoPicker photoIds={photoIds} onChange={setPhotoIds} />
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" {...register("isActive")} />
           Aktif

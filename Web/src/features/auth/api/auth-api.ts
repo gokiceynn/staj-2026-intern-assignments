@@ -1,4 +1,5 @@
 import { apiClient, authClient } from "@/lib/api/client";
+import { normalizeAccountPayload } from "@/lib/auth/normalize-account";
 import type {
   LoginData,
   OtpSession,
@@ -43,7 +44,8 @@ export const authApi = {
       body: input,
     }),
 
-  getMe: () => apiClient<User>("account/me"),
+  getMe: async () =>
+    normalizeAccountPayload(await apiClient<{ account: User }>("account/me")),
 };
 
 export type { LoginData };

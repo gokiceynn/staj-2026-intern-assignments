@@ -22,6 +22,7 @@ export function ToastContainer() {
       {toasts.map((toast) => (
         <div
           key={toast.id}
+          role={toast.type === "error" ? "alert" : "status"}
           className={cn(
             "flex min-w-[280px] items-center justify-between gap-3 rounded-md border px-4 py-3 shadow-md",
             typeStyles[toast.type],

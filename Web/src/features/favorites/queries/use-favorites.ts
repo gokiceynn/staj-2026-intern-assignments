@@ -6,6 +6,7 @@ import { useCurrentUser } from "@/features/auth/queries/use-auth";
 import { queryKeys } from "@/lib/query/keys";
 import { useToast } from "@/components/ui/toast-context";
 import { ApiError } from "@/lib/api/envelope";
+import type { Paginated, ProductListItem } from "@/types/api";
 
 type FavoritesQuery = {
   page?: number;
@@ -55,14 +56,65 @@ export function useToggleFavorite() {
         await favoritesApi.add(productId);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.favorites.all });
+    onMutate: async ({ productId, isFavorite }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.favorites.all });
+
+      const previousIds = queryClient.getQueryData<Set<string>>(
+        queryKeys.favorites.ids,
+      );
+
+      queryClient.setQueryData<Set<string>>(queryKeys.favorites.ids, (old) => {
+        const next = new Set(old ?? []);
+        if (isFavorite) {
+          next.delete(productId);
+        } else {
+          next.add(productId);
+        }
+        return next;
+      });
+
+      const previousLists = queryClient.getQueriesData<Paginated<ProductListItem>>({
+        queryKey: ["favorites", "list"],
+      });
+
+      if (isFavorite) {
+        queryClient.setQueriesData<Paginated<ProductListItem>>(
+          { queryKey: ["favorites", "list"] },
+          (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              items: old.items.filter((item) => item.id !== productId),
+              totalCount: Math.max(0, old.totalCount - 1),
+            };
+          },
+        );
+      }
+
+      return { previousIds, previousLists };
     },
-    onError: (err) => {
+    onError: (err, _vars, context) => {
+      if (context?.previousIds) {
+        queryClient.setQueryData(queryKeys.favorites.ids, context.previousIds);
+      }
+      if (context?.previousLists) {
+        for (const [key, data] of context.previousLists) {
+          queryClient.setQueryData(key, data);
+        }
+      }
       showToast(
         err instanceof ApiError ? err.message : "Favori işlemi başarısız",
         "error",
       );
+    },
+    onSuccess: (_data, { isFavorite }) => {
+      showToast(
+        isFavorite ? "Favorilerden çıkarıldı" : "Favorilere eklendi",
+        "success",
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.favorites.all });
     },
   });
 }
@@ -71,17 +123,31 @@ export function useFavorites() {
   const { data: user } = useCurrentUser();
   const { data: favoriteIds } = useFavoriteIds();
   const toggleFavorite = useToggleFavorite();
+  const { showToast } = useToast();
 
   const has = (productId: string) => favoriteIds?.has(productId) ?? false;
 
   const toggle = (productId: string) => {
-    if (!user) return;
+    if (!user) {
+      showToast("Favoriler için giriş yapmalısınız", "error");
+      return;
+    }
     toggleFavorite.mutate({ productId, isFavorite: has(productId) });
+  };
+
+  const remove = (productId: string) => {
+    if (!user) {
+      showToast("Favoriler için giriş yapmalısınız", "error");
+      return;
+    }
+    if (!has(productId)) return;
+    toggleFavorite.mutate({ productId, isFavorite: true });
   };
 
   return {
     has,
     toggle,
+    remove,
     isAvailable: Boolean(user),
     isPending: toggleFavorite.isPending,
   };

@@ -22,14 +22,21 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
+function readTheme(): Theme {
+  if (typeof document === "undefined") return "light";
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // SSR ile ilk istemci render'ı aynı kalsın; gerçek tema useEffect'te senkronize edilir.
   const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
     const stored = localStorage.getItem("vbshop_theme") as Theme | null;
-    const initial = stored ?? "light";
-    setThemeState(initial);
-    applyTheme(initial);
+    const resolved =
+      stored === "light" || stored === "dark" ? stored : readTheme();
+    setThemeState(resolved);
+    applyTheme(resolved);
   }, []);
 
   const setTheme = useCallback((next: Theme) => {
@@ -39,8 +46,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme(theme === "light" ? "dark" : "light");
-  }, [theme, setTheme]);
+    setThemeState((current) => {
+      const next = current === "light" ? "dark" : "light";
+      localStorage.setItem("vbshop_theme", next);
+      applyTheme(next);
+      return next;
+    });
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>

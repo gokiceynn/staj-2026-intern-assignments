@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cn } from "@/lib/utils/cn";
 
 const LINKS = {
   Kurumsal: [
@@ -18,9 +19,9 @@ const LINKS = {
   ],
 };
 
-export function Footer() {
+export function Footer({ className }: { className?: string }) {
   return (
-    <footer className="mt-12 border-t border-border bg-surface">
+    <footer className={cn("mt-12 border-t border-border bg-surface", className)}>
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="grid gap-8 md:grid-cols-4">
           <div>
@@ -30,8 +31,10 @@ export function Footer() {
             </p>
           </div>
           {Object.entries(LINKS).map(([title, items]) => (
-            <div key={title}>
-              <h3 className="font-semibold">{title}</h3>
+            <nav key={title} aria-labelledby={`footer-${title}`}>
+              <h3 id={`footer-${title}`} className="font-semibold">
+                {title}
+              </h3>
               <ul className="mt-3 space-y-2">
                 {items.map((item) => (
                   <li key={item.label}>
@@ -44,7 +47,7 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
         </div>
         <div className="mt-8 flex flex-col items-center justify-between gap-2 border-t border-border pt-6 text-xs text-text-muted md:flex-row">

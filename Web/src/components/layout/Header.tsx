@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, FormEvent, Suspense } from "react";
 import { CategoryNav } from "@/components/layout/CategoryNav";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useCurrentUser, useLogout } from "@/features/auth/queries/use-auth";
 import { useCartItemCount } from "@/features/cart/queries/use-cart";
 import { useRootCategories } from "@/features/categories/queries/use-categories";
@@ -15,13 +14,11 @@ import {
   UserIcon,
   HeartIcon,
 } from "@/components/ui/icons";
-import { cn } from "@/lib/utils/cn";
 
 function HeaderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: user } = useCurrentUser();
@@ -35,7 +32,6 @@ function HeaderContent() {
     const params = new URLSearchParams();
     if (search.trim()) params.set("q", search.trim());
     router.push(`/products?${params.toString()}`);
-    setMobileOpen(false);
   };
 
   const handleLogout = async () => {
@@ -62,7 +58,7 @@ function HeaderContent() {
 
           <form
             onSubmit={handleSearch}
-            className="hidden flex-1 items-stretch md:flex"
+            className="flex flex-1 items-stretch"
           >
             <div className="flex flex-1 overflow-hidden rounded-lg border-2 border-brand-500 bg-surface">
               <input
@@ -70,12 +66,12 @@ function HeaderContent() {
                 placeholder="Ürün, kategori veya marka ara"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="min-h-[44px] flex-1 px-4 text-sm outline-none"
+                className="min-h-[44px] flex-1 bg-surface px-3 text-sm text-text outline-none placeholder:text-text-muted md:px-4"
                 aria-label="Ürün ara"
               />
               <button
                 type="submit"
-                className="flex min-w-[52px] items-center justify-center bg-brand-500 text-white transition hover:bg-brand-600"
+                className="flex min-w-[44px] items-center justify-center bg-brand-500 text-white transition hover:bg-brand-600 md:min-w-[52px]"
                 aria-label="Ara"
               >
                 <SearchIcon className="h-5 w-5" />
@@ -83,12 +79,10 @@ function HeaderContent() {
             </div>
           </form>
 
-          <div className="ml-auto flex items-center gap-1 md:gap-2">
-            <ThemeToggle />
-
+          <div className="hidden items-center gap-1 md:flex md:gap-2">
             <Link
               href="/favorites"
-              className="hidden min-h-[44px] min-w-[44px] flex-col items-center justify-center rounded-lg px-2 text-text-muted hover:bg-surface-muted hover:text-brand-600 sm:flex"
+              className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center rounded-lg px-2 text-text-muted hover:bg-surface-muted hover:text-brand-600"
               aria-label="Favoriler"
             >
               <HeartIcon className="h-6 w-6" />
@@ -101,7 +95,9 @@ function HeaderContent() {
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center rounded-lg px-2 text-text-muted hover:bg-surface-muted hover:text-brand-600"
                 aria-expanded={menuOpen}
-                aria-label="Hesabım"
+                aria-haspopup="menu"
+                aria-controls="account-menu"
+                aria-label="Hesabım menüsü"
               >
                 <UserIcon className="h-6 w-6" />
                 <span className="hidden max-w-[72px] truncate text-[10px] font-medium sm:block">
@@ -115,7 +111,11 @@ function HeaderContent() {
                     onClick={() => setMenuOpen(false)}
                     aria-hidden
                   />
-                  <div className="absolute right-0 z-50 mt-1 w-52 rounded-lg border border-border bg-surface py-1 shadow-lg">
+                  <div
+                    id="account-menu"
+                    role="menu"
+                    className="absolute right-0 z-50 mt-1 w-52 rounded-lg border border-border bg-surface py-1 shadow-lg"
+                  >
                     {user ? (
                       <>
                         <p className="border-b border-border px-4 py-2 text-sm font-medium">
@@ -123,6 +123,7 @@ function HeaderContent() {
                         </p>
                         <Link
                           href="/profile"
+                          role="menuitem"
                           className="block px-4 py-2.5 text-sm hover:bg-surface-muted"
                           onClick={() => setMenuOpen(false)}
                         >
@@ -211,42 +212,13 @@ function HeaderContent() {
                 </span>
               )}
             </Link>
-
-            <button
-              type="button"
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg md:hidden"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Menü"
-              aria-expanded={mobileOpen}
-            >
-              <span className="text-xl">{mobileOpen ? "✕" : "☰"}</span>
-            </button>
           </div>
-        </div>
-
-        <div className={cn("pb-3 md:hidden", mobileOpen ? "block" : "hidden")}>
-          <form onSubmit={handleSearch}>
-            <div className="flex overflow-hidden rounded-lg border-2 border-brand-500">
-              <input
-                type="search"
-                placeholder="Ürün ara..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="min-h-[44px] flex-1 px-4 text-sm outline-none"
-              />
-              <button
-                type="submit"
-                className="bg-brand-500 px-4 text-white"
-                aria-label="Ara"
-              >
-                <SearchIcon className="h-5 w-5" />
-              </button>
-            </div>
-          </form>
         </div>
       </div>
 
-      <CategoryNav categories={categories} />
+      <div className="hidden md:block">
+        <CategoryNav categories={categories} />
+      </div>
     </header>
   );
 }

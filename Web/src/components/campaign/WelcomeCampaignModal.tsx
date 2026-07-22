@@ -157,7 +157,7 @@ export function WelcomeCampaignModal() {
             onClick={closeModal}
             className={cn(
               "absolute -right-1 -top-1 z-20 flex h-9 w-9 items-center justify-center rounded-full",
-              "bg-white text-lg leading-none text-text shadow-md transition",
+              "bg-surface text-lg leading-none text-text shadow-md transition",
               "hover:bg-surface-muted focus-visible:outline focus-visible:outline-2",
               "focus-visible:outline-brand-500 focus-visible:outline-offset-2",
               "sm:right-2 sm:top-2",

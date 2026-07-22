@@ -72,13 +72,25 @@ function ProductsContent() {
   };
 
   const handleAddToCart = async (productId: string) => {
+    const product = displayProducts.find((item) => item.id === productId);
     setAddingId(productId);
     try {
-      await addToCart.mutateAsync({ productId, quantity: 1 });
+      await addToCart.mutateAsync({
+        productId,
+        quantity: 1,
+        product: product
+          ? {
+              productTitle: product.title,
+              price: product.price,
+              photoUrl: product.photoUrl,
+              photoId: product.photoId,
+              stock: product.stock,
+            }
+          : undefined,
+      });
       showToast("Ürün sepete eklendi", "success");
-    } catch (err) {
-      const msg = err instanceof ApiError ? err.message : "Sepete eklenemedi";
-      showToast(msg, "error");
+    } catch {
+      // Hata toast'ı useAddToCart içinde gösteriliyor
     } finally {
       setAddingId(undefined);
     }

@@ -27,11 +27,18 @@
 }
 
 .dark {
-  --color-surface: #111827;
-  --color-surface-muted: #1f2937;
-  --color-border: #374151;
+  --color-brand-50: #431407;
+  --color-brand-100: #7c2d12;
+  --color-brand-200: #9a3412;
+  --color-accent: #5d3ebc;
+  --color-surface: #16181d;
+  --color-surface-muted: #0f1115;
+  --color-border: #2a2e37;
   --color-text: #f9fafb;
   --color-text-muted: #9ca3af;
+  --color-success: #0ba45c;
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.35);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.45);
 }
 
 @layer base {
@@ -43,6 +50,20 @@
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+
+  .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .dark textarea,
+  .dark select {
+    color: var(--color-text);
+    background-color: var(--color-surface);
+  }
+
+  .dark hr,
+  .dark table,
+  .dark th,
+  .dark td {
+    border-color: var(--color-border);
   }
 }
 

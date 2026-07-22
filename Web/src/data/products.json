@@ -1,0 +1,616 @@
+[
+  {
+    "id": "p01",
+    "name": "iPhone 16 128 GB Siyah",
+    "brand": "Apple",
+    "description": "A18 çip, 48 MP ana kamera ve tüm gün pil ömrü. Türkiye garantili, faturalı.",
+    "categoryId": "elektronik",
+    "price": 64999,
+    "originalPrice": 72999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p01a/600/600",
+      "https://picsum.photos/seed/vbshop-p01b/600/600",
+      "https://picsum.photos/seed/vbshop-p01c/600/600"
+    ],
+    "rating": 4.7,
+    "reviewCount": 1284,
+    "stock": 25,
+    "seller": "VBShop",
+    "freeShipping": true,
+    "isFlashDeal": true,
+    "isFeatured": true,
+    "createdAt": "2026-05-02T09:00:00Z"
+  },
+  {
+    "id": "p02",
+    "name": "Galaxy S25 256 GB Titanyum Gri",
+    "brand": "Samsung",
+    "description": "Snapdragon 8 Elite işlemci, 120 Hz Dynamic AMOLED ekran, Galaxy AI destekli kamera.",
+    "categoryId": "elektronik",
+    "price": 57499,
+    "originalPrice": 62999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p02a/600/600",
+      "https://picsum.photos/seed/vbshop-p02b/600/600"
+    ],
+    "rating": 4.6,
+    "reviewCount": 956,
+    "stock": 18,
+    "seller": "TeknoMarket",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-04-18T09:00:00Z"
+  },
+  {
+    "id": "p03",
+    "name": "MacBook Air 13\" M4 16 GB / 256 GB",
+    "brand": "Apple",
+    "description": "M4 çipli, sessiz ve fansız tasarım. 18 saate kadar pil ömrü, Liquid Retina ekran.",
+    "categoryId": "elektronik",
+    "price": 52999,
+    "originalPrice": null,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p03a/600/600",
+      "https://picsum.photos/seed/vbshop-p03b/600/600"
+    ],
+    "rating": 4.9,
+    "reviewCount": 412,
+    "stock": 9,
+    "seller": "VBShop",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-03-25T09:00:00Z"
+  },
+  {
+    "id": "p04",
+    "name": "WH-1000XM6 Kablosuz Kulaklık",
+    "brand": "Sony",
+    "description": "Sektör lideri gürültü engelleme, 30 saat pil, çoklu cihaz bağlantısı.",
+    "categoryId": "elektronik",
+    "price": 14499,
+    "originalPrice": 17999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p04a/600/600",
+      "https://picsum.photos/seed/vbshop-p04b/600/600"
+    ],
+    "rating": 4.8,
+    "reviewCount": 2321,
+    "stock": 42,
+    "seller": "SesDünyası",
+    "freeShipping": true,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-05-20T09:00:00Z"
+  },
+  {
+    "id": "p05",
+    "name": "Redmi Note 14 Pro 256 GB",
+    "brand": "Xiaomi",
+    "description": "200 MP kamera, 120W hızlı şarj, AMOLED ekran. Fiyat/performans şampiyonu.",
+    "categoryId": "elektronik",
+    "price": 15999,
+    "originalPrice": 18499,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p05a/600/600"
+    ],
+    "rating": 4.4,
+    "reviewCount": 3105,
+    "stock": 67,
+    "seller": "TeknoMarket",
+    "freeShipping": true,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-06-01T09:00:00Z"
+  },
+  {
+    "id": "p06",
+    "name": "55\" Crystal UHD 4K Smart TV",
+    "brand": "Samsung",
+    "description": "4K yükseltme, Tizen işletim sistemi, oyun modu ve ince tasarım.",
+    "categoryId": "elektronik",
+    "price": 27999,
+    "originalPrice": 31999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p06a/600/600",
+      "https://picsum.photos/seed/vbshop-p06b/600/600"
+    ],
+    "rating": 4.5,
+    "reviewCount": 789,
+    "stock": 3,
+    "seller": "EvElektroniği",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-02-10T09:00:00Z"
+  },
+  {
+    "id": "p07",
+    "name": "AirPods Pro 3",
+    "brand": "Apple",
+    "description": "Uyarlanabilir aktif gürültü engelleme, kalp atış hızı sensörü, USB-C kılıf.",
+    "categoryId": "elektronik",
+    "price": 11999,
+    "originalPrice": null,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p07a/600/600"
+    ],
+    "rating": 4.7,
+    "reviewCount": 1876,
+    "stock": 54,
+    "seller": "VBShop",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-05-28T09:00:00Z"
+  },
+  {
+    "id": "p08",
+    "name": "Oversize Basic Tişört — Beyaz",
+    "brand": "Mavi",
+    "description": "%100 pamuk, rahat kesim, dört mevsim kullanım. S–XXL beden seçenekleri.",
+    "categoryId": "moda",
+    "price": 449,
+    "originalPrice": 599,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p08a/600/600",
+      "https://picsum.photos/seed/vbshop-p08b/600/600"
+    ],
+    "rating": 4.3,
+    "reviewCount": 5210,
+    "stock": 230,
+    "seller": "ModaEvi",
+    "freeShipping": false,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-04-05T09:00:00Z"
+  },
+  {
+    "id": "p09",
+    "name": "Slim Fit Jean Pantolon — Koyu Mavi",
+    "brand": "Levi's",
+    "description": "511 Slim Fit, esnek kumaş, klasik 5 cepli tasarım.",
+    "categoryId": "moda",
+    "price": 2299,
+    "originalPrice": 2899,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p09a/600/600"
+    ],
+    "rating": 4.6,
+    "reviewCount": 1432,
+    "stock": 85,
+    "seller": "ModaEvi",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-03-14T09:00:00Z"
+  },
+  {
+    "id": "p10",
+    "name": "Air Force 1 '07 Spor Ayakkabı",
+    "brand": "Nike",
+    "description": "Efsanevi basketbol tasarımı, deri üst yüzey, Air yastıklama.",
+    "categoryId": "moda",
+    "price": 4799,
+    "originalPrice": 5499,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p10a/600/600",
+      "https://picsum.photos/seed/vbshop-p10b/600/600"
+    ],
+    "rating": 4.8,
+    "reviewCount": 8934,
+    "stock": 47,
+    "seller": "SporMağaza",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-01-20T09:00:00Z"
+  },
+  {
+    "id": "p11",
+    "name": "Kadın Trençkot — Bej",
+    "brand": "Koton",
+    "description": "Kuşaklı, su itici kumaş, mevsimlik şık trençkot.",
+    "categoryId": "moda",
+    "price": 1899,
+    "originalPrice": 2499,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p11a/600/600"
+    ],
+    "rating": 4.2,
+    "reviewCount": 673,
+    "stock": 2,
+    "seller": "ModaEvi",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-02-28T09:00:00Z"
+  },
+  {
+    "id": "p12",
+    "name": "Bella Coffee Maker Filtre Kahve Makinesi",
+    "brand": "Arzum",
+    "description": "1,25 L kapasite, aroma seçeneği, otomatik kapanma ve damla önleyici.",
+    "categoryId": "ev-yasam",
+    "price": 1349,
+    "originalPrice": 1699,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p12a/600/600"
+    ],
+    "rating": 4.4,
+    "reviewCount": 2156,
+    "stock": 73,
+    "seller": "EvYaşamStore",
+    "freeShipping": false,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-05-11T09:00:00Z"
+  },
+  {
+    "id": "p13",
+    "name": "Robot Süpürge S8 Pro",
+    "brand": "Roborock",
+    "description": "LiDAR navigasyon, 6000 Pa emiş gücü, paspas fonksiyonu ve uygulama kontrolü.",
+    "categoryId": "ev-yasam",
+    "price": 24999,
+    "originalPrice": 29999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p13a/600/600",
+      "https://picsum.photos/seed/vbshop-p13b/600/600"
+    ],
+    "rating": 4.7,
+    "reviewCount": 891,
+    "stock": 14,
+    "seller": "TeknoMarket",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-04-22T09:00:00Z"
+  },
+  {
+    "id": "p14",
+    "name": "Ortopedik Visco Yastık 2'li Set",
+    "brand": "Yataş",
+    "description": "Boyun destekli visco yastık, nefes alan kumaş, yıkanabilir kılıf.",
+    "categoryId": "ev-yasam",
+    "price": 899,
+    "originalPrice": 1299,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p14a/600/600"
+    ],
+    "rating": 4.1,
+    "reviewCount": 3420,
+    "stock": 156,
+    "seller": "EvYaşamStore",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-03-08T09:00:00Z"
+  },
+  {
+    "id": "p15",
+    "name": "6 Kişilik Yemek Takımı — 24 Parça",
+    "brand": "Karaca",
+    "description": "Bone porselen, bulaşık makinesinde yıkanabilir, modern desen.",
+    "categoryId": "ev-yasam",
+    "price": 3499,
+    "originalPrice": 4299,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p15a/600/600",
+      "https://picsum.photos/seed/vbshop-p15b/600/600"
+    ],
+    "rating": 4.6,
+    "reviewCount": 567,
+    "stock": 31,
+    "seller": "EvYaşamStore",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-01-30T09:00:00Z"
+  },
+  {
+    "id": "p16",
+    "name": "Luminous Silk Fondöten 30 ml",
+    "brand": "L'Oréal Paris",
+    "description": "24 saat kalıcı, doğal mat bitiş, SPF 20. Tüm cilt tiplerine uygun.",
+    "categoryId": "kozmetik",
+    "price": 649,
+    "originalPrice": 849,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p16a/600/600"
+    ],
+    "rating": 4.3,
+    "reviewCount": 4102,
+    "stock": 198,
+    "seller": "KozmetikPlus",
+    "freeShipping": false,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-06-05T09:00:00Z"
+  },
+  {
+    "id": "p17",
+    "name": "Erkek Parfüm EDT 100 ml — Intense",
+    "brand": "Hugo Boss",
+    "description": "Odunsu ve baharatlı notalar, uzun kalıcılık. Orijinal ürün garantisi.",
+    "categoryId": "kozmetik",
+    "price": 3299,
+    "originalPrice": 4199,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p17a/600/600"
+    ],
+    "rating": 4.7,
+    "reviewCount": 1287,
+    "stock": 44,
+    "seller": "KozmetikPlus",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-04-12T09:00:00Z"
+  },
+  {
+    "id": "p18",
+    "name": "Cilt Bakım Seti — Nemlendirici + Serum + Tonik",
+    "brand": "The Purest Solutions",
+    "description": "Hyalüronik asit ve C vitamini içeren 3'lü günlük bakım rutini.",
+    "categoryId": "kozmetik",
+    "price": 1149,
+    "originalPrice": 1499,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p18a/600/600",
+      "https://picsum.photos/seed/vbshop-p18b/600/600"
+    ],
+    "rating": 4.5,
+    "reviewCount": 2876,
+    "stock": 0,
+    "seller": "KozmetikPlus",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-05-19T09:00:00Z"
+  },
+  {
+    "id": "p19",
+    "name": "Filtre Kahve 1 kg — Kolombiya Supremo",
+    "brand": "Kurukahveci Mehmet Efendi",
+    "description": "Orta kavrum, çekirdek veya filtre çekim seçeneği, taze kavrum.",
+    "categoryId": "supermarket",
+    "price": 749,
+    "originalPrice": null,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p19a/600/600"
+    ],
+    "rating": 4.8,
+    "reviewCount": 6540,
+    "stock": 320,
+    "seller": "VBShop",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-06-15T09:00:00Z"
+  },
+  {
+    "id": "p20",
+    "name": "Zeytinyağı Naturel Sızma 2 L",
+    "brand": "Komili",
+    "description": "Erken hasat, soğuk sıkım, Ege bölgesi zeytinlerinden.",
+    "categoryId": "supermarket",
+    "price": 1299,
+    "originalPrice": 1549,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p20a/600/600"
+    ],
+    "rating": 4.6,
+    "reviewCount": 2103,
+    "stock": 87,
+    "seller": "VBShop",
+    "freeShipping": false,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-06-20T09:00:00Z"
+  },
+  {
+    "id": "p21",
+    "name": "Protein Bar 12'li Kutu — Fıstık Ezmeli",
+    "brand": "Züber",
+    "description": "Şeker ilavesiz, 10 g protein, doğal içerik. Antrenman sonrası ideal.",
+    "categoryId": "supermarket",
+    "price": 429,
+    "originalPrice": 529,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p21a/600/600"
+    ],
+    "rating": 4.2,
+    "reviewCount": 1654,
+    "stock": 240,
+    "seller": "SağlıklıMarket",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-05-30T09:00:00Z"
+  },
+  {
+    "id": "p22",
+    "name": "Katlanır Koşu Bandı X100",
+    "brand": "Voit",
+    "description": "2,5 HP motor, 12 program, kalp ritmi sensörü, katlanabilir tasarım.",
+    "categoryId": "spor",
+    "price": 18999,
+    "originalPrice": 22999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p22a/600/600",
+      "https://picsum.photos/seed/vbshop-p22b/600/600"
+    ],
+    "rating": 4.3,
+    "reviewCount": 342,
+    "stock": 7,
+    "seller": "SporMağaza",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-02-14T09:00:00Z"
+  },
+  {
+    "id": "p23",
+    "name": "Yoga Matı 6 mm — Mor",
+    "brand": "Adidas",
+    "description": "Kaymaz yüzey, taşıma askılı, çevre dostu TPE malzeme.",
+    "categoryId": "spor",
+    "price": 899,
+    "originalPrice": 1199,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p23a/600/600"
+    ],
+    "rating": 4.5,
+    "reviewCount": 1876,
+    "stock": 112,
+    "seller": "SporMağaza",
+    "freeShipping": false,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-06-08T09:00:00Z"
+  },
+  {
+    "id": "p24",
+    "name": "Kamp Çadırı 4 Kişilik — Su Geçirmez",
+    "brand": "Quechua",
+    "description": "2 dakikada kurulum, 2000 mm su sütunu, UV korumalı.",
+    "categoryId": "spor",
+    "price": 5499,
+    "originalPrice": null,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p24a/600/600",
+      "https://picsum.photos/seed/vbshop-p24b/600/600"
+    ],
+    "rating": 4.7,
+    "reviewCount": 923,
+    "stock": 19,
+    "seller": "OutdoorPro",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-04-01T09:00:00Z"
+  },
+  {
+    "id": "p25",
+    "name": "Suç ve Ceza — Hasan Âli Yücel Klasikleri",
+    "brand": "İş Bankası Kültür Yayınları",
+    "description": "Dostoyevski'nin başyapıtı, ciltli özel baskı, Ergin Altay çevirisi.",
+    "categoryId": "kitap",
+    "price": 189,
+    "originalPrice": 249,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p25a/600/600"
+    ],
+    "rating": 4.9,
+    "reviewCount": 12405,
+    "stock": 500,
+    "seller": "KitapSarayı",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-01-05T09:00:00Z"
+  },
+  {
+    "id": "p26",
+    "name": "Atomik Alışkanlıklar",
+    "brand": "Pegasus Yayınları",
+    "description": "James Clear'dan küçük değişikliklerle büyük sonuçlar elde etmenin yolları.",
+    "categoryId": "kitap",
+    "price": 219,
+    "originalPrice": 289,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p26a/600/600"
+    ],
+    "rating": 4.6,
+    "reviewCount": 8730,
+    "stock": 342,
+    "seller": "KitapSarayı",
+    "freeShipping": false,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-03-20T09:00:00Z"
+  },
+  {
+    "id": "p27",
+    "name": "1000 Parça Puzzle — Van Gogh Yıldızlı Gece",
+    "brand": "Ravensburger",
+    "description": "Softclick teknolojisi, yüksek kalite baskı, 70x50 cm bitmiş boyut.",
+    "categoryId": "kitap",
+    "price": 649,
+    "originalPrice": null,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p27a/600/600"
+    ],
+    "rating": 4.8,
+    "reviewCount": 1245,
+    "stock": 28,
+    "seller": "HobiDünyası",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-02-22T09:00:00Z"
+  },
+  {
+    "id": "p28",
+    "name": "Bebek Arabası Travel Sistem — Gri",
+    "brand": "Chicco",
+    "description": "Ana kucağı dahil, tek elle katlanır, 0-36 ay kullanım, 5 nokta emniyet kemeri.",
+    "categoryId": "anne-bebek",
+    "price": 12499,
+    "originalPrice": 14999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p28a/600/600",
+      "https://picsum.photos/seed/vbshop-p28b/600/600"
+    ],
+    "rating": 4.6,
+    "reviewCount": 782,
+    "stock": 11,
+    "seller": "BebekStore",
+    "freeShipping": true,
+    "isFlashDeal": false,
+    "isFeatured": true,
+    "createdAt": "2026-03-30T09:00:00Z"
+  },
+  {
+    "id": "p29",
+    "name": "Bebek Bezi 4 Numara — 174 Adet Aylık Paket",
+    "brand": "Prima",
+    "description": "12 saate kadar kuruluk, esnek bantlar, dermatolojik test.",
+    "categoryId": "anne-bebek",
+    "price": 1449,
+    "originalPrice": 1699,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p29a/600/600"
+    ],
+    "rating": 4.7,
+    "reviewCount": 9605,
+    "stock": 430,
+    "seller": "VBShop",
+    "freeShipping": true,
+    "isFlashDeal": true,
+    "isFeatured": false,
+    "createdAt": "2026-06-25T09:00:00Z"
+  },
+  {
+    "id": "p30",
+    "name": "Ahşap Eğitici Oyuncak Seti — Montessori",
+    "brand": "Wader",
+    "description": "Doğal boyalı ahşap, 1-4 yaş, motor beceri gelişimi için 5 parça set.",
+    "categoryId": "anne-bebek",
+    "price": 789,
+    "originalPrice": 999,
+    "images": [
+      "https://picsum.photos/seed/vbshop-p30a/600/600"
+    ],
+    "rating": 4.4,
+    "reviewCount": 456,
+    "stock": 3,
+    "seller": "BebekStore",
+    "freeShipping": false,
+    "isFlashDeal": false,
+    "isFeatured": false,
+    "createdAt": "2026-05-06T09:00:00Z"
+  }
+]

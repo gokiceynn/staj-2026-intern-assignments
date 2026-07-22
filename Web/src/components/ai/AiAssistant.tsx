@@ -37,7 +37,7 @@ export function AiAssistant() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+    <div className="fixed bottom-20 right-4 z-50 flex flex-col items-end gap-2 md:bottom-4">
       {open && (
         <div className="flex h-[420px] w-[min(100vw-2rem,360px)] flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-lg">
           <div className="relative border-b border-border bg-brand-500 px-4 py-3 pr-12 text-white">
@@ -85,7 +85,7 @@ export function AiAssistant() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Mesajınızı yazın..."
                 disabled={!status?.configured || chat.isPending}
-                className="flex-1 rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-brand-500"
+                className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm text-text outline-none placeholder:text-text-muted focus:border-brand-500"
               />
               <Button
                 type="submit"

@@ -17,14 +17,14 @@ export function QuickDealStrip() {
           <Link
             key={deal.label}
             href={deal.href}
-            className="flex h-full min-h-[160px] w-full max-w-[240px] flex-col items-center justify-center gap-4 rounded-[1.25rem] border border-border bg-white/95 px-4 py-5 text-center shadow-xl transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-2xl dark:bg-slate-950/90"
+            className="flex h-full min-h-[160px] w-full max-w-[240px] flex-col items-center justify-center gap-4 rounded-[1.25rem] border border-border bg-surface px-4 py-5 text-center shadow-xl transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-2xl"
           >
             <span
               className={`flex h-14 w-14 items-center justify-center rounded-full text-2xl ${deal.color}`}
             >
               {deal.emoji}
             </span>
-            <span className="max-w-[10rem] text-sm font-semibold leading-tight text-text dark:text-text">
+            <span className="max-w-[10rem] text-sm font-semibold leading-tight text-text">
               {deal.label}
             </span>
           </Link>

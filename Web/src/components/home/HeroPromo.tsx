@@ -145,7 +145,7 @@ export function HeroPromo() {
         <button
           type="button"
           onClick={prev}
-          className="absolute left-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-text shadow-md transition hover:bg-white"
+          className="absolute left-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-surface/95 text-text shadow-md transition hover:bg-surface-muted"
           aria-label="Önceki kampanya"
         >
           <ChevronLeftIcon className="h-5 w-5" />
@@ -153,7 +153,7 @@ export function HeroPromo() {
         <button
           type="button"
           onClick={next}
-          className="absolute right-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-text shadow-md transition hover:bg-white"
+          className="absolute right-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-surface/95 text-text shadow-md transition hover:bg-surface-muted"
           aria-label="Sonraki kampanya"
         >
           <ChevronRightIcon className="h-5 w-5" />

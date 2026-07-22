@@ -24,8 +24,8 @@ function navLinkClass(active: boolean) {
   return cn(
     "shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
     active
-      ? "bg-brand-50 text-brand-600"
-      : "text-text-muted hover:bg-surface-muted hover:text-brand-600",
+      ? "bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-100"
+      : "text-text-muted hover:bg-surface-muted hover:text-brand-600 dark:hover:text-brand-100",
   );
 }
 

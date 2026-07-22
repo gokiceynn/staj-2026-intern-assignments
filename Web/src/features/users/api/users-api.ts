@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/client";
+import { normalizeAccountPayload } from "@/lib/auth/normalize-account";
 import type { OtpSession, User } from "@/types/api";
 import type {
   ChangePasswordInput,
@@ -6,10 +7,16 @@ import type {
 } from "@/features/auth/schemas/auth";
 
 export const usersApi = {
-  getMe: () => apiClient<User>("account/me"),
+  getMe: async () =>
+    normalizeAccountPayload(await apiClient<{ account: User }>("account/me")),
 
-  updateMe: (input: UpdateProfileInput) =>
-    apiClient<User>("account/me", { method: "PUT", body: input }),
+  updateMe: async (input: UpdateProfileInput) =>
+    normalizeAccountPayload(
+      await apiClient<{ account: User }>("account/me", {
+        method: "PUT",
+        body: input,
+      }),
+    ),
 
   changePassword: (input: ChangePasswordInput) =>
     apiClient<null>("account/me/password", { method: "PUT", body: input }),
