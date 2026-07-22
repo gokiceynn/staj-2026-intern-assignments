@@ -1,0 +1,154 @@
+name: e-commerce-dev
+
+services:
+  # 1. VS Code Server (Orijinal temiz imaj üzerinden otomatik kurulumlu)
+  code-server:
+    image: codercom/code-server:latest
+    container_name: e-commerce-backend
+    mem_limit: 2g
+    environment:
+      - PASSWORD=123456
+      - TZ=Europe/Istanbul
+    ports:
+      - "127.0.0.1:8081:8080"
+      # Konteyner içinde `dotnet run` ile başlatılan API; launchSettings.json 5080 kullanıyor.
+      - "127.0.0.1:5081:5080"
+    volumes:
+      - ${PWD}/../../:/home/coder/project # Projenin duracağı yer
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        if [ ! -f /home/coder/.installed ]; then
+          echo "=== Otomatik Kurulum Başlıyor (Bu işlem ilk seferde birkaç dakika sürebilir) ==="
+          
+          # Sistem paketleri ve ICU (dotnet için) kurulumu
+          sudo apt-get update
+          sudo apt-get install -y tzdata libicu-dev wget curl ca-certificates
+          
+          # Saat dilimi ayarı
+          sudo ln -snf /usr/share/zoneinfo/Europe/Istanbul /etc/localtime
+          sudo sh -c 'echo "Europe/Istanbul" > /etc/timezone'
+          
+          # .NET 8 SDK Kurulumu (Sudo ile sistem geneline kuruyoruz)
+          curl -sSL https://dot.net/v1/dotnet-install.sh | sudo bash /dev/stdin --channel 9.0 --install-dir /usr/share/dotnet
+          sudo ln -sf /usr/share/dotnet/dotnet /usr/bin/dotnet
+          
+          # .NET PATH ayarını kalıcı yap
+          echo 'export PATH="$$PATH:/home/coder/.dotnet/tools:/usr/share/dotnet"' >> /home/coder/.bashrc
+          export PATH="$$PATH:/home/coder/.dotnet/tools:/usr/share/dotnet"
+          
+          # Global Tool'lar (Artık sudo gerektirmeden, doğrudan /usr/bin/dotnet üzerinden kurulacak!)
+          /usr/bin/dotnet tool install --global dotnet-ef
+          /usr/bin/dotnet tool install --global csharpier
+          
+          # VS Code Eklentileri
+          /usr/bin/code-server --install-extension csharpier.csharpier-vscode
+          /usr/bin/code-server --install-extension cweijan.vscode-database-client2
+          /usr/bin/code-server --install-extension JakubKozera.csharp-dev-tools 
+          
+          # VS Code Ayarları (Koyu Tema ve Format on Save)
+          mkdir -p /home/coder/.local/share/code-server/User
+          echo '{
+              "workbench.colorTheme": "Dark Modern",
+              "files.autoSave": "onFocusChange",
+              "editor.formatOnType": false,
+              "editor.formatOnPaste": false,
+              "editor.formatOnSave": true,
+              "editor.defaultFormatter": "csharpier.csharpier-vscode",
+              "[csharp]": {
+                  "editor.defaultFormatter": "csharpier.csharpier-vscode",
+                  "editor.formatOnType": false,
+                  "editor.formatOnPaste": false
+              },
+              "debug.inlineValues": false,
+              "editor.semanticTokenColorCustomizations": {
+                "rules": {
+                  "interface": "#b8ce82",
+                  "class": "#4EC9B0",
+                  "struct": "#86C691",
+                  "enum": "#86C691",
+                  "enumMember": "#4FC1FF",
+                  "namespace": "#E0E0E0",
+                  "method": "#DCDCAA",
+                  "property": "#9CDCFE",
+                  "parameter": "#9CDCFE",
+                  "local": "#9CDCFE"
+                }
+              },
+              "editor.tokenColorCustomizations": {
+                "textMateRules": [
+                  {
+                    "scope": ["entity.name.type.interface.cs"],
+                    "settings": { "foreground": "#b8ce82", "fontStyle": "italic" }
+                  },
+                  {
+                    "scope": ["entity.name.type.class.cs"],
+                    "settings": { "foreground": "#4EC9B0" }
+                  },
+                  {
+                    "scope": ["entity.name.type.struct.cs", "entity.name.type.enum.cs"],
+                    "settings": { "foreground": "#86C691" }
+                  },
+                  {
+                    "scope": ["variable.other.enummember.cs"],
+                    "settings": { "foreground": "#4FC1FF" }
+                  },
+                  {
+                    "scope": ["entity.name.function.cs", "support.function"],
+                    "settings": { "foreground": "#DCDCAA" }
+                  },
+                  {
+                    "scope": ["variable.parameter.cs", "variable.other.local.cs"],
+                    "settings": { "foreground": "#9CDCFE" }
+                  },
+                  {
+                    "scope": ["string", "string.quoted"],
+                    "settings": { "foreground": "#CE9178" }
+                  },
+                  {
+                    "scope": ["comment", "punctuation.definition.comment"],
+                    "settings": { "foreground": "#6A9955", "fontStyle": "italic" }
+                  }
+                ]
+              }
+          }' > /home/coder/.local/share/code-server/User/settings.json
+          
+          # Kurulum bitti işareti koyuyoruz ki bir sonraki startta tekrar uğraşmasın
+          touch /home/coder/.installed
+          echo "=== Otomatik Kurulum Başarıyla Tamamlandı! ==="
+        fi
+        
+        # VS Code Server'ı başlatıp konteyneri açık tutuyoruz
+        exec /usr/bin/entrypoint.sh --bind-addr 0.0.0.0:8080 /home/coder/project
+
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - redis
+
+  # 2. MySQL Veritabanı
+  mysql:
+    image: mysql:latest
+    container_name: e-commerce-mysql
+    mem_limit: 512m
+    environment:
+      - MYSQL_ROOT_PASSWORD=e-commerce
+      - MYSQL_DATABASE=e-commerce-db
+      - MYSQL_USER=e-commerce
+      - MYSQL_PASSWORD=e-commerce
+    ports:
+      - "127.0.0.1:3307:3306"
+    restart: unless-stopped
+
+  # 3. Redis Cache
+  redis:
+    image: redis:latest
+    container_name: e-commerce-redis
+    mem_limit: 256m
+    ports:
+      - "127.0.0.1:6380:6379"
+    restart: unless-stopped
+
+networks:
+  default:
+    name: e-commerce_dev_network

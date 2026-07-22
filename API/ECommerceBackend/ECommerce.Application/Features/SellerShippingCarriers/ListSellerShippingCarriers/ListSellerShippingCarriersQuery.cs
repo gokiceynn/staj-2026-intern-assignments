@@ -1,0 +1,2 @@
+namespace ECommerce.Application.Features.SellerShippingCarriers.ListSellerShippingCarriers;
+public sealed record ListSellerShippingCarriersQuery;
