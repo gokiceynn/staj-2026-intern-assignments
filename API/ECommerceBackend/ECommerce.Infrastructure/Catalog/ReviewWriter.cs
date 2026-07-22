@@ -22,7 +22,7 @@ public sealed class ReviewWriter(AppDbContext db, ITransactionRunner transaction
             if (!links.IsSuccess) return Result<ReviewDto>.Failure(links.Error!);
             Review review = new() { Id = links.Value!.FirstOrDefault()?.ReviewId ?? ids.NewId("rev"), ProductId = productId,
                 CustomerAccountId = accountId, Rating = rating, Comment = comment, IsActive = true, CreatedAtUtc = clock.UtcNow };
-            foreach (ReviewPhoto link in links.Value) { link.ReviewId = review.Id; review.Photos.Add(link); }
+            foreach (ReviewPhoto link in links.Value!) { link.ReviewId = review.Id; review.Photos.Add(link); }
             db.Reviews.Add(review); await db.SaveChangesAsync(token); await RefreshAggregateAsync(product, token);
             await db.Entry(review).Reference(x => x.CustomerAccount).LoadAsync(token);
             return Result<ReviewDto>.Success(Map(review));
@@ -68,7 +68,8 @@ public sealed class ReviewWriter(AppDbContext db, ITransactionRunner transaction
     {
         var ratings = db.Reviews.Where(x => x.ProductId == product.Id && x.IsActive);
         product.ReviewCount = await ratings.CountAsync(ct);
-        product.RatingAverage = product.ReviewCount == 0 ? 0 : Math.Round(await ratings.AverageAsync(x => x.Rating, ct), 2);
+        // Rating int olduğu için AverageAsync double döndürür; RatingAverage decimal.
+        product.RatingAverage = product.ReviewCount == 0 ? 0m : Math.Round((decimal)await ratings.AverageAsync(x => x.Rating, ct), 2);
         await db.SaveChangesAsync(ct);
     }
 

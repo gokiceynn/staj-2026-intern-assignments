@@ -37,7 +37,7 @@ public static class ResultExtensions
         return Failure(controller, clock, result.Error!);
     }
 
-    private static IActionResult Failure(ControllerBase controller, IClock clock, Error error)
+    private static ObjectResult Failure(ControllerBase controller, IClock clock, Error error)
     {
         int status = error.Code switch
         {

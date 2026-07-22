@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using ECommerce.Application.Common.Abstractions;
 using ECommerce.Application.Common.Models;
@@ -24,7 +25,9 @@ public sealed class LocalFileStorage(IOptions<StorageOptions> options, IIdGenera
         else if (contentType == "image/png") await image.SaveAsPngAsync(sanitized, ct);
         else await image.SaveAsWebpAsync(sanitized, ct);
         byte[] bytes = sanitized.ToArray();
-        string relative = Path.Combine(DateTime.UtcNow.ToString("yyyy/MM/dd"), ids.NewId("file") + extension);
+        // InvariantCulture şart: InvariantGlobalization=false olduğu için sunucunun kültürü
+        // (ör. th-TH Budist takvimi) dosya yolundaki yılı değiştirebilirdi.
+        string relative = Path.Combine(DateTime.UtcNow.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture), ids.NewId("file") + extension);
         string full = SafePath(relative);
         Directory.CreateDirectory(Path.GetDirectoryName(full)!);
         await File.WriteAllBytesAsync(full, bytes, ct);

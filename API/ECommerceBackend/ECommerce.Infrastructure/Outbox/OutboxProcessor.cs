@@ -24,15 +24,23 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, ILogger<OutboxP
         AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         IOutboxMessageDispatcher dispatcher = scope.ServiceProvider.GetRequiredService<IOutboxMessageDispatcher>();
         DateTime now = DateTime.UtcNow; string lockId = Guid.NewGuid().ToString("N");
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        List<OutboxMessage> batch = await db.OutboxMessages.FromSqlInterpolated($@"
-            SELECT * FROM outbox_messages
-            WHERE (status = {(int)OutboxStatus.Pending} AND (next_attempt_at_utc IS NULL OR next_attempt_at_utc <= {now}))
-               OR (status = {(int)OutboxStatus.Processing} AND locked_until_utc < {now})
-            ORDER BY created_at_utc LIMIT 20 FOR UPDATE SKIP LOCKED").ToListAsync(ct);
-        foreach (OutboxMessage item in batch)
-        { item.Status = OutboxStatus.Processing; item.LockId = lockId; item.LockedUntilUtc = now.AddMinutes(2); }
-        await db.SaveChangesAsync(ct); await tx.CommitAsync(ct);
+        // EnableRetryOnFailure devrede olduğu için elle açılan transaction'lar execution
+        // strategy'nin içinden çalıştırılmalı; aksi halde EF InvalidOperationException atar.
+        // Aynı desen EfTransactionRunner'da da kullanılıyor.
+        var strategy = db.Database.CreateExecutionStrategy();
+        List<OutboxMessage> batch = await strategy.ExecuteAsync(async () =>
+        {
+            await using var tx = await db.Database.BeginTransactionAsync(ct);
+            List<OutboxMessage> claimed = await db.OutboxMessages.FromSqlInterpolated($@"
+                SELECT * FROM outbox_messages
+                WHERE (status = {(int)OutboxStatus.Pending} AND (next_attempt_at_utc IS NULL OR next_attempt_at_utc <= {now}))
+                   OR (status = {(int)OutboxStatus.Processing} AND locked_until_utc < {now})
+                ORDER BY created_at_utc LIMIT 20 FOR UPDATE SKIP LOCKED").ToListAsync(ct);
+            foreach (OutboxMessage item in claimed)
+            { item.Status = OutboxStatus.Processing; item.LockId = lockId; item.LockedUntilUtc = now.AddMinutes(2); }
+            await db.SaveChangesAsync(ct); await tx.CommitAsync(ct);
+            return claimed;
+        });
 
         foreach (OutboxMessage item in batch)
         {

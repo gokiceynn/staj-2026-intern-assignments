@@ -37,7 +37,9 @@ public sealed class RegisterSellerHandler(
         return await transactions.ExecuteAsync(async token =>
         {
             db.Accounts.Add(account);
-            db.SellerProfiles.Add(new SellerProfile
+            // Tam nitelikli: ECommerce.Application.Features.SellerProfile namespace'i
+            // buradaki kısa 'SellerProfile' adını gölgeliyor (CS0118).
+            db.SellerProfiles.Add(new ECommerce.Domain.Profiles.SellerProfile
             {
                 Id = ids.NewId("sel"), AccountId = account.Id, StoreName = command.StoreName.Trim(),
                 TaxNumber = command.TaxNumber, TaxOffice = command.TaxOffice.Trim(), Description = string.Empty,

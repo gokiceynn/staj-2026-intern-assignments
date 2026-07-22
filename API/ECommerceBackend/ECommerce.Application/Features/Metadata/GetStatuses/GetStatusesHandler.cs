@@ -3,6 +3,9 @@ using ECommerce.Domain.Common.Enums;
 namespace ECommerce.Application.Features.Metadata.GetStatuses;
 public sealed class GetStatusesHandler
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static",
+        Justification = "Tüm handler'lar DI'dan çözülüp örnek metot olarak çağrılır; static yapmak bu " +
+                        "endpoint'i diğerlerinden farklı kılar ve handler'a ileride bağımlılık eklemeyi zorlaştırır.")]
     public Task<Result<IReadOnlyList<StatusGroup>>> HandleAsync(GetStatusesQuery query, CancellationToken ct)
     {
         static IReadOnlyList<StatusItem> Map<T>() where T : struct, Enum => Enum.GetNames<T>()
