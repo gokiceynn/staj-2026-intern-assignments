@@ -13,6 +13,9 @@ import {
   useProfile,
   useUpdateProfile,
   useChangePassword,
+  useDeleteAccount,
+  useStartEmailChange,
+  useVerifyEmailChange,
 } from "@/features/users/queries/use-users";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -20,12 +23,26 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useToast } from "@/components/ui/toast-context";
 import { ApiError, getFieldErrors } from "@/lib/api/envelope";
+import { getAuthErrorMessage } from "@/lib/api/auth-errors";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  changeEmailSchema,
+  verifyEmailChangeSchema,
+  type ChangeEmailInput,
+  type VerifyEmailChangeInput,
+} from "@/features/auth/schemas/auth";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { data: user, isLoading, error, refetch } = useProfile();
   const updateProfile = useUpdateProfile();
   const changePassword = useChangePassword();
+  const deleteAccount = useDeleteAccount();
+  const startEmailChange = useStartEmailChange();
+  const verifyEmailChange = useVerifyEmailChange();
   const { showToast } = useToast();
+  const [emailSessionId, setEmailSessionId] = useState("");
 
   const profileForm = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
@@ -33,6 +50,15 @@ export default function ProfilePage() {
 
   const passwordForm = useForm<ChangePasswordInput>({
     resolver: zodResolver(changePasswordSchema),
+  });
+
+  const emailForm = useForm<ChangeEmailInput>({
+    resolver: zodResolver(changeEmailSchema),
+  });
+
+  const emailVerifyForm = useForm<VerifyEmailChangeInput>({
+    resolver: zodResolver(verifyEmailChangeSchema),
+    defaultValues: { sessionId: "" },
   });
 
   if (isLoading) return <Skeleton className="h-96 w-full" />;
@@ -81,11 +107,45 @@ export default function ProfilePage() {
           });
         }
       } else {
-        showToast(
-          err instanceof ApiError ? err.message : "Şifre değiştirilemedi",
-          "error",
-        );
+        showToast(getAuthErrorMessage(err, "Şifre değiştirilemedi"), "error");
       }
+    }
+  };
+
+  const onEmailSubmit = async (data: ChangeEmailInput) => {
+    try {
+      const session = await startEmailChange.mutateAsync(data);
+      setEmailSessionId(session.sessionId);
+      emailVerifyForm.setValue("sessionId", session.sessionId);
+      showToast("Doğrulama kodu yeni e-posta adresinize gönderildi", "success");
+    } catch (err) {
+      showToast(getAuthErrorMessage(err, "E-posta değiştirilemedi"), "error");
+    }
+  };
+
+  const onEmailVerifySubmit = async (data: VerifyEmailChangeInput) => {
+    try {
+      await verifyEmailChange.mutateAsync(data);
+      showToast("E-posta güncellendi", "success");
+      setEmailSessionId("");
+      emailForm.reset();
+      emailVerifyForm.reset();
+      refetch();
+    } catch (err) {
+      showToast(getAuthErrorMessage(err, "Doğrulama başarısız"), "error");
+    }
+  };
+
+  const onDeleteAccount = async () => {
+    const password = window.prompt("Hesabınızı silmek için şifrenizi girin:");
+    if (!password) return;
+    try {
+      await deleteAccount.mutateAsync(password);
+      showToast("Hesap silindi", "success");
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      showToast(getAuthErrorMessage(err, "Hesap silinemedi"), "error");
     }
   };
 
@@ -130,6 +190,47 @@ export default function ProfilePage() {
       </form>
 
       <form
+        onSubmit={emailForm.handleSubmit(onEmailSubmit)}
+        className="space-y-4 rounded-lg border border-border bg-surface p-6"
+      >
+        <h2 className="text-lg font-semibold">E-posta Değiştir</h2>
+        <p className="text-sm text-text-muted">Mevcut: {user.email}</p>
+        <Input
+          label="Yeni E-posta"
+          type="email"
+          error={emailForm.formState.errors.newEmail?.message}
+          {...emailForm.register("newEmail")}
+        />
+        <Input
+          label="Şifre"
+          type="password"
+          error={emailForm.formState.errors.password?.message}
+          {...emailForm.register("password")}
+        />
+        <Button type="submit" loading={startEmailChange.isPending}>
+          Kod Gönder
+        </Button>
+      </form>
+
+      {emailSessionId && (
+        <form
+          onSubmit={emailVerifyForm.handleSubmit(onEmailVerifySubmit)}
+          className="space-y-4 rounded-lg border border-border bg-surface p-6"
+        >
+          <h2 className="text-lg font-semibold">E-posta Doğrulama Kodu</h2>
+          <input type="hidden" {...emailVerifyForm.register("sessionId")} />
+          <Input
+            label="Doğrulama Kodu"
+            error={emailVerifyForm.formState.errors.code?.message}
+            {...emailVerifyForm.register("code")}
+          />
+          <Button type="submit" loading={verifyEmailChange.isPending}>
+            E-postayı Doğrula
+          </Button>
+        </form>
+      )}
+
+      <form
         onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
         className="space-y-4 rounded-lg border border-border bg-surface p-6"
       >
@@ -156,6 +257,20 @@ export default function ProfilePage() {
           Şifreyi Değiştir
         </Button>
       </form>
+
+      <div className="rounded-lg border border-danger/30 bg-surface p-6">
+        <h2 className="text-lg font-semibold text-danger">Tehlikeli Bölge</h2>
+        <p className="mb-4 text-sm text-text-muted">
+          Hesabınızı kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz.
+        </p>
+        <Button
+          variant="danger"
+          loading={deleteAccount.isPending}
+          onClick={onDeleteAccount}
+        >
+          Hesabımı Sil
+        </Button>
+      </div>
     </div>
   );
 }

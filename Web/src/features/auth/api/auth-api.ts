@@ -8,6 +8,7 @@ import type {
   ForgotPasswordInput,
   LoginInput,
   RegisterInput,
+  RegisterSellerInput,
   ResetPasswordInput,
   VerifyEmailInput,
 } from "@/features/auth/schemas/auth";
@@ -20,6 +21,12 @@ export const authApi = {
 
   register: (input: RegisterInput) =>
     authClient<OtpSession>("register", { method: "POST", body: input }),
+
+  registerSeller: (input: RegisterSellerInput) =>
+    authClient<OtpSession>("register-seller", { method: "POST", body: input }),
+
+  resendEmail: (email: string) =>
+    authClient<OtpSession>("resend-email", { method: "POST", body: { email } }),
 
   verifyEmail: (input: VerifyEmailInput) =>
     authClient<{ user: User }>("verify-email", { method: "POST", body: input }),

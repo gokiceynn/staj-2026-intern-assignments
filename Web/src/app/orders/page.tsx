@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useOrders } from "@/features/orders/queries/use-orders";
 import { Price } from "@/components/ui/Price";
-import { Badge } from "@/components/ui/Badge";
 import { Pagination } from "@/components/ui/Pagination";
+import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -60,7 +60,7 @@ function OrdersContent() {
               </div>
               <div className="text-right">
                 <Price amount={order.totalAmount} />
-                <Badge className="mt-1">{order.status}</Badge>
+                <OrderStatusBadge status={order.status} />
               </div>
             </div>
           </Link>

@@ -5,7 +5,7 @@ import {
   getAuthCookieOptions,
 } from "@/lib/auth/cookies";
 import { getServerApiBaseUrl } from "@/lib/api/config";
-import { parseApiResponse } from "@/lib/api/envelope";
+import { ApiError, parseApiResponse } from "@/lib/api/envelope";
 import type { AuthTokens, LoginData } from "@/types/api";
 
 function applyTokens(response: NextResponse, tokens: AuthTokens) {
@@ -33,15 +33,32 @@ function applyTokens(response: NextResponse, tokens: AuthTokens) {
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const upstream = await fetch(`${getServerApiBaseUrl()}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
+  try {
+    const upstream = await fetch(`${getServerApiBaseUrl()}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    });
 
-  const data = await parseApiResponse<LoginData>(upstream);
-  const response = NextResponse.json({ user: data.account });
-  applyTokens(response, data);
-  return response;
+    const data = await parseApiResponse<LoginData>(upstream);
+    const response = NextResponse.json({ user: data.account });
+    applyTokens(response, data);
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          data: null,
+          isSuccess: false,
+          message: error.message,
+          code: error.code,
+          errors: error.errors,
+        },
+        { status: error.code >= 400 && error.code < 600 ? error.code : 400 },
+      );
+    }
+
+    throw error;
+  }
 }

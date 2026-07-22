@@ -7,6 +7,7 @@ type ProductGridProps = {
   loading?: boolean;
   onAddToCart?: (productId: string) => void;
   addingId?: string;
+  getDiscountPercent?: (product: ProductListItem) => number | undefined;
 };
 
 export function ProductGrid({
@@ -14,6 +15,7 @@ export function ProductGrid({
   loading,
   onAddToCart,
   addingId,
+  getDiscountPercent,
 }: ProductGridProps) {
   if (loading) {
     return (
@@ -33,6 +35,7 @@ export function ProductGrid({
           product={product}
           onAddToCart={onAddToCart}
           adding={addingId === product.id}
+          discountPercent={getDiscountPercent?.(product)}
         />
       ))}
     </div>
