@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   });
 
   const data = await parseApiResponse<LoginData>(upstream);
-  const response = NextResponse.json({ user: data.user });
+  const response = NextResponse.json({ user: data.account });
   applyTokens(response, data);
   return response;
 }

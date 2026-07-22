@@ -1,41 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useFavorites } from "@/features/favorites/queries/use-favorites";
-import { useProducts } from "@/features/products/queries/use-products";
+import { useFavoritesList } from "@/features/favorites/queries/use-favorites";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Button } from "@/components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ApiError } from "@/lib/api/envelope";
 
 export default function FavoritesPage() {
-  const { ids, isDevOnly, isAvailable } = useFavorites();
-  const { data, isLoading } = useProducts({ page: 1, size: 100 });
+  const { data, isLoading, error, refetch } = useFavoritesList({
+    page: 1,
+    size: 48,
+  });
 
-  const favoriteProducts =
-    data?.items.filter((p) => ids.includes(p.id)) ?? [];
+  if (error) {
+    return (
+      <ErrorState
+        message={
+          error instanceof ApiError ? error.message : "Favoriler yüklenemedi"
+        }
+        onRetry={() => refetch()}
+      />
+    );
+  }
+
+  const items = data?.items ?? [];
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Favorilerim</h1>
 
-      {isDevOnly && (
-        <p className="rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800 dark:bg-yellow-950 dark:text-yellow-100">
-          Favoriler yalnızca development ortamında localStorage ile saklanır.
-          Backend API sözleşmesinde favori endpoint&apos;i bulunmamaktadır.
-        </p>
-      )}
-
-      {!isAvailable ? (
-        <EmptyState
-          title="Favoriler kullanılamıyor"
-          description="Production ortamında favori kalıcılığı backend API gelene kadar devre dışıdır."
-          action={
-            <Button onClick={() => window.location.assign("/products")}>
-              Ürünlere Git
-            </Button>
-          }
-        />
-      ) : favoriteProducts.length === 0 && !isLoading ? (
+      {!isLoading && items.length === 0 ? (
         <EmptyState
           title="Favori ürün yok"
           description="Beğendiğiniz ürünleri favorilere ekleyin."
@@ -49,7 +44,7 @@ export default function FavoritesPage() {
           }
         />
       ) : (
-        <ProductGrid products={favoriteProducts} loading={isLoading} />
+        <ProductGrid products={items} loading={isLoading} />
       )}
     </div>
   );

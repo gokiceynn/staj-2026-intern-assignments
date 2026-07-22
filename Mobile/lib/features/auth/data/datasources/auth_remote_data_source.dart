@@ -4,8 +4,8 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/storage/token_store.dart';
 import '../models/user_model.dart';
 
-/// Gerçek API auth uçları. Sözleşme (OpenAPI) beklentisi:
-/// `POST /auth/login` → `{ "accessToken", "refreshToken", "user": {...} }`
+/// Gerçek API auth uçları (v1.3).
+/// `POST /auth/login` → `data`: token alanları + `account` (eski taslaklarda `user`).
 class AuthRemoteDataSource {
   AuthRemoteDataSource(this._client, this._tokenStore);
 
@@ -62,7 +62,8 @@ class AuthRemoteDataSource {
   Future<void> logout() => _tokenStore.clear();
 
   Future<UserModel> _saveSessionFrom(Map<String, dynamic> data) async {
-    final user = UserModel.fromJson(data['user'] as Map<String, dynamic>);
+    final profileJson = data['account'] ?? data['user'];
+    final user = UserModel.fromJson(profileJson as Map<String, dynamic>);
     await _tokenStore.saveSession(
       accessToken: data['accessToken'] as String,
       refreshToken: data['refreshToken'] as String,
