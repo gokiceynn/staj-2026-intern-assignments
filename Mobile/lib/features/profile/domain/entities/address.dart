@@ -9,6 +9,7 @@ class Address extends Equatable {
     required this.city,
     required this.district,
     required this.addressLine,
+    this.zipCode = '',
   });
 
   final String id;
@@ -22,9 +23,12 @@ class Address extends Equatable {
   final String district;
   final String addressLine;
 
+  /// Posta kodu — gerçek API adres kaydı için zorunlu; mock modda kullanılmaz.
+  final String zipCode;
+
   String get summary => '$addressLine, $district / $city';
 
   @override
   List<Object?> get props =>
-      [id, title, fullName, phone, city, district, addressLine];
+      [id, title, fullName, phone, city, district, addressLine, zipCode];
 }

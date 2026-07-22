@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../../core/config/app_config.dart';
 import '../../domain/entities/product.dart';
 
 part 'product_model.g.dart';
@@ -27,6 +28,34 @@ class ProductModel extends Product {
 
   factory ProductModel.fromJson(Map<String, dynamic> json) =>
       _$ProductModelFromJson(json);
+
+  /// Cart/Favorites gibi özet uçlarının döndürdüğü kısaltılmış ürün JSON'u
+  /// (`{id, title, price, stock, photoId, sellerId?, sellerName?, ...}`)
+  /// için esnek dönüştürücü — tam katalog kaydı değil, satır görünümü.
+  factory ProductModel.fromSummaryJson(Map<String, dynamic> json) {
+    final photoId = json['photoId'] as String?;
+    final seller = json['seller'] as Map<String, dynamic>?;
+    return ProductModel(
+      id: (json['id'] ?? json['productId']).toString(),
+      name: (json['title'] ?? json['name'] ?? '').toString(),
+      brand: '',
+      description: (json['description'] ?? '').toString(),
+      categoryId:
+          (json['categoryId'] ?? (json['category'] as Map?)?['id'] ?? '')
+              .toString(),
+      price: (json['price'] as num).toDouble(),
+      images: photoId != null
+          ? ['${AppConfig.apiBaseUrl}/photos/$photoId']
+          : const [],
+      rating: (json['rating'] as num?)?.toDouble() ?? 0,
+      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
+      stock: (json['stock'] as num).toInt(),
+      seller: (json['sellerName'] ?? seller?['storeName'] ?? '').toString(),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
+    );
+  }
 
   factory ProductModel.fromEntity(Product p) => ProductModel(
         id: p.id,

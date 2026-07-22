@@ -8,11 +8,11 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/app_network_image.dart';
 import '../../../../core/widgets/feedback_widgets.dart';
 import '../../../catalog/domain/entities/product.dart';
-import '../../../catalog/domain/entities/product_query.dart';
-import '../../../catalog/presentation/providers/catalog_providers.dart';
 import '../providers/admin_providers.dart';
 
-/// Ürün yönetimi: listeleme + arama + ekleme/düzenleme/silme.
+/// Satıcının kendi ürün yönetimi: listeleme + arama + ekleme/düzenleme/silme.
+/// `GET /seller/products` kullanır — genel katalog değil, yalnızca bu
+/// mağazanın ürünleri (bkz. `adminMyProductsProvider`).
 class AdminProductsScreen extends ConsumerStatefulWidget {
   const AdminProductsScreen({super.key});
 
@@ -22,9 +22,6 @@ class AdminProductsScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
-  static const _allProductsQuery =
-      ProductQuery(size: 200, sort: ProductSort.newest);
-
   String _search = '';
 
   Future<void> _confirmDelete(Product product) async {
@@ -68,10 +65,10 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(productListProvider(_allProductsQuery));
+    final state = ref.watch(adminMyProductsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ürün Yönetimi')),
+      appBar: AppBar(title: const Text('Ürünlerim')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/admin/product-form'),
         icon: const Icon(Icons.add),
@@ -95,18 +92,25 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
               data: (data) {
                 final needle = _search.trim().toLowerCase();
                 final items = needle.isEmpty
-                    ? data.items
-                    : data.items
+                    ? data
+                    : data
                         .where(
                           (p) => '${p.name} ${p.brand}'
                               .toLowerCase()
                               .contains(needle),
                         )
                         .toList();
-                if (items.isEmpty) {
+                if (data.isEmpty) {
                   return const EmptyState(
                     icon: Icons.inventory_2_outlined,
-                    title: 'Ürün bulunamadı',
+                    title: 'Henüz ürün eklemedin',
+                    message: 'Sağ alttaki butondan ilk ürününü ekle.',
+                  );
+                }
+                if (items.isEmpty) {
+                  return const EmptyState(
+                    icon: Icons.search_off,
+                    title: 'Aramanla eşleşen ürün yok',
                   );
                 }
                 return ListView.separated(
@@ -124,7 +128,9 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         title: Text(
-                          '${product.brand} ${product.name}',
+                          product.brand.isEmpty
+                              ? product.name
+                              : '${product.brand} ${product.name}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -207,8 +213,7 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
               loading: () => const AppLoader(),
               error: (e, _) => ErrorView(
                 message: 'Ürünler yüklenemedi.',
-                onRetry: () =>
-                    ref.invalidate(productListProvider(_allProductsQuery)),
+                onRetry: () => ref.invalidate(adminMyProductsProvider),
               ),
             ),
           ),

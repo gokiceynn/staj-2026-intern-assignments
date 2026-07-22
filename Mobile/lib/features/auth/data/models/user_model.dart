@@ -17,5 +17,25 @@ class UserModel extends User {
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
+  /// Backend `AccountSummary` şeması: `{id, email, firstName, lastName,
+  /// phoneNumber, role, createdAt}` — mock modun düz `{name, phone}`
+  /// şeklinden farklı olduğu için ayrı bir dönüştürücü.
+  factory UserModel.fromAccountSummary(Map<String, dynamic> json) {
+    final firstName = (json['firstName'] ?? '').toString();
+    final lastName = (json['lastName'] ?? '').toString();
+    final role = (json['role'] ?? '').toString().toLowerCase();
+    return UserModel(
+      id: json['id'].toString(),
+      name: '$firstName $lastName'.trim(),
+      email: json['email'] as String,
+      phone: json['phoneNumber'] as String?,
+      role: switch (role) {
+        'admin' => UserRole.admin,
+        'seller' => UserRole.seller,
+        _ => UserRole.customer,
+      },
+    );
+  }
+
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 }

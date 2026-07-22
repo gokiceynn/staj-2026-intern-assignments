@@ -6,7 +6,11 @@ abstract interface class OrderRepository {
   /// Başarılı olursa sepet temizlenir ve stoklar düşer.
   Future<Order> createOrder({
     required Address address,
-    required String cardLast4,
+    required String cardHolderName,
+    required String cardNumber,
+    required int expiryMonth,
+    required int expiryYear,
+    required String cvv,
   });
 
   Future<List<Order>> getMyOrders();

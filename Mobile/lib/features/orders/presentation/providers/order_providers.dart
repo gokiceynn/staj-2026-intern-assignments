@@ -6,14 +6,19 @@ import '../../../cart/presentation/providers/cart_providers.dart';
 import '../../../catalog/presentation/providers/catalog_providers.dart';
 import '../../../profile/domain/entities/address.dart';
 import '../../data/datasources/order_mock_data_source.dart';
+import '../../data/datasources/order_remote_data_source.dart';
 import '../../data/repositories/order_repository_impl.dart';
 import '../../domain/entities/order.dart';
 import '../../domain/repositories/order_repository.dart';
 
 final orderRepositoryProvider = Provider<OrderRepository>(
   (ref) => OrderRepositoryImpl(
-    OrderMockDataSource(
+    mock: OrderMockDataSource(
       ref.watch(mockDatabaseProvider),
+      ref.watch(tokenStoreProvider),
+    ),
+    remote: OrderRemoteDataSource(
+      ref.watch(dioClientProvider),
       ref.watch(tokenStoreProvider),
     ),
   ),
@@ -40,13 +45,21 @@ class CheckoutController extends AsyncNotifier<void> {
 
   Future<Order> placeOrder({
     required Address address,
-    required String cardLast4,
+    required String cardHolderName,
+    required String cardNumber,
+    required int expiryMonth,
+    required int expiryYear,
+    required String cvv,
   }) async {
     state = const AsyncLoading();
     try {
       final order = await ref.read(orderRepositoryProvider).createOrder(
             address: address,
-            cardLast4: cardLast4,
+            cardHolderName: cardHolderName,
+            cardNumber: cardNumber,
+            expiryMonth: expiryMonth,
+            expiryYear: expiryYear,
+            cvv: cvv,
           );
       ref
         ..invalidate(cartControllerProvider)

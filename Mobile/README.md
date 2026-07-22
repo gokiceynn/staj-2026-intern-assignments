@@ -16,9 +16,11 @@
 | 🛒 Sepet | Adet güncelleme, stok doğrulama, **kupon kodları** (`VB10`, `HOSGELDIN50`), **kargo bedava ilerleme çubuğu** (500 TL eşiği), tutar özeti |
 | 💳 Checkout | 3 adımlı akış: adres seçimi → kart formu (maskeleme + doğrulama, **ödeme simülasyonu**) → özet & onay; sipariş sonrası stok düşer |
 | 🧾 Siparişler | Sipariş geçmişi, sipariş detayı, **durum takip zaman çizelgesi** (Onay Bekliyor → Hazırlanıyor → Kargoda → Teslim) |
-| ❤️ Favoriler | Misafir dahil herkes için cihaz-yerel favoriler, her yerden kalp ile ekle/çıkar |
-| 👤 Hesap | Login/Register (demo hesap kısayolları), misafir modu, adres defteri (CRUD), **açık/koyu tema**, güvenli çıkış |
+| ❤️ Favoriler | Hesaba bağlı favoriler (backend `CustomerOnly`), her yerden kalp ile ekle/çıkar; mock modda misafir de cihaz-yerel favori ekleyebilir |
+| 👤 Hesap | Login/Register (demo hesap kısayolları), **e-posta doğrulama**, **şifremi unuttum/sıfırla**, misafir modu, adres defteri (CRUD), **profil düzenleme**, **şifre değiştirme**, **hesabı sil**, açık/koyu tema, güvenli çıkış |
 | 🛠️ **Admin Paneli** | Rol bazlı erişim; dashboard (ciro, sipariş, müşteri, stok istatistikleri), **ürün CRUD**, **sipariş durumu yönetimi** |
+| 🤖 **AI Asistan** | Sağ-alt köşede yüzen sohbet asistanı (web'deki Gemini asistanının portu); mevcut `Web` uygulamasının `/api/ai/chat` ucunu proxy olarak kullanır — API key mobile hiç gömülmez |
+| 🎉 **Karşılama Kampanyası** | Misafir kullanıcıya açılışta bir kez gösterilen üyelik kampanya modalı (web'deki `WelcomeCampaignModal`'ın sadeleştirilmiş portu) |
 
 **Edge-case'ler bilinçli tasarlandı:** boş durumlar, skeleton yükleme, hata + tekrar dene, stok tükendi, "Son X ürün!" uyarısı, geçersiz/eşik altı kupon, boş sepetle checkout engeli.
 
@@ -52,21 +54,29 @@ lib/
     └── presentation/      # Riverpod controller/provider + ekranlar (UI "aptal")
 ```
 
-Feature'lar: `auth`, `catalog`, `cart`, `favorites`, `orders` (checkout dahil), `profile`, `admin`, `shell`.
+Feature'lar: `auth`, `catalog`, `cart`, `favorites`, `orders` (checkout dahil), `profile`, `admin`, `ai`, `shell`.
 
-### Sözleşme-Öncelikli Çalışma (Backend'i Beklemeden)
+### Backend Entegrasyonu
 
-Ödev gereği backend OpenAPI sözleşmesini yayınlayana kadar mock ile paralel ilerledik:
+Backend (.NET, bkz. `../API`) artık ayakta; tüm feature'lar (`auth`, `catalog`, `cart`, `favorites`, `orders`, `profile`, `admin`) gerçek API'ye bağlı ve varsayılan çalışma modu budur.
 
-- **`MockDatabase`** = sahte sunucu: seed JSON'dan yüklenir, tüm mutasyonlar (sepet, sipariş, admin düzenlemeleri) `SharedPreferences`'a kalıcı yazılır. Uygulama kapansa da durum korunur.
-- Beklenen endpoint haritası [`lib/core/network/api_endpoints.dart`](lib/core/network/api_endpoints.dart) dosyasında; **auth + katalog** için gerçek Dio remote datasource'ları şimdiden hazır.
-- Geçiş tek bayrak, kod değişikliği yok:
+- Endpoint haritası [`lib/core/network/api_endpoints.dart`](lib/core/network/api_endpoints.dart) dosyasında; her feature'ın `data/datasources/*_remote_data_source.dart` dosyası ilgili controller'ın sözleşmesine göre yazıldı.
+- `DioClient` (`lib/core/network/dio_client.dart`) `ApiResponse` zarfını açar, 401 aldığında `refresh-token` ile oturumu bir kez yeniler ve isteği otomatik tekrar dener.
+- `admin` özelliği kapsam olarak backend'in `SellerController`'ına karşılık gelir (kendi ürün/sipariş yönetimi); platform geneli `AdminController` (kullanıcı/satıcı denetimi) mobilde kullanılmıyor.
+- Kupon (sepet) yalnızca mock modda vitrin özelliğidir — backend kupon uçları yayınlamıyor.
+- **`MockDatabase`** hâlâ mevcut: backend'e erişilemeyen (offline demo, hızlı UI geliştirme, E2E testleri) senaryolar için `USE_MOCK=true` ile açılır.
 
 ```sh
-flutter run --dart-define=USE_MOCK=false --dart-define=API_BASE_URL=https://api.ornek.com/api/v1
+flutter run                                          # varsayılan: gerçek API (http://10.0.2.2:5082/api/v1)
+flutter run --dart-define=API_BASE_URL=https://api.ornek.com/api/v1
+flutter run --dart-define=USE_MOCK=true              # mock veri ile çalış (backend'siz)
 ```
 
-**Yol haritası:** sözleşme netleşince `cart/orders/profile/admin` remote datasource'ları aynı desenle eklenecek (repo impl'lerdeki `NOT (contract-first)` yorumlarına bakın). Favoriler bilinçli olarak cihaz-yerel (misafir desteği + offline).
+**Port dikkat:** varsayılan `5082`, `API/docker/test/.env.example`'daki `API_PORT` ile birebir aynı olmalı (host tarafı — konteyner içi hep `8080`'dir). Lokal `dotnet run` ile çalıştırıyorsan `launchSettings.json` `5080` kullanır; o zaman `--dart-define=API_BASE_URL=http://10.0.2.2:5080/api/v1` ver. Dev docker stack (`API/docker/dev`, varsa) farklı bir port kullanabilir — API ekibiyle teyit et.
+
+**Admin girişi (gerçek API):** mock moddaki `admin@vbshop.com` / `admin123` kısayolu **sadece `MockDatabase`'de var** — gerçek backend'de yok, login ekranındaki demo çipler bu yüzden `USE_MOCK=true` değilse gizlenir. Gerçek API'de ilk admin hesabı `Seed:Admin:*` ortam değişkenleriyle açılır (`API/docker/test/.env.example` → varsayılan `admin@ecommerce.local` / değiştirmen gereken bir parola, en az 12 karakter). Docker stack'i ayağa kaldıran kişiden gerçek `.env` değerlerini iste.
+
+**CORS notu:** backend `AllowedOrigins` listesi tek bir origin'e izin verir (varsayılan `http://localhost:3000`, sadece Web için). Native Android/iOS derlemeleri CORS'tan etkilenmez, ama Flutter'ı `flutter run -d chrome` ile web'de test edersen, kullandığın portu (`--web-port`) backend'in `.env`'inde `ALLOWED_ORIGIN`'e eklemen gerekir yoksa istekler tarayıcıda CORS hatasıyla reddedilir.
 
 ## Kurulum & Çalıştırma
 
@@ -84,8 +94,8 @@ flutter run -d windows               # masaüstü önizleme
 ### Testler
 
 ```sh
-flutter test                                        # 27 unit test
-flutter test -d windows integration_test            # uçtan uca E2E (masaüstünde)
+flutter test                                                             # 27 unit test
+flutter test -d windows integration_test --dart-define=USE_MOCK=true    # uçtan uca E2E (mock veriyle, backend'siz)
 ```
 
 - **Unit (27):** sepet toplamları, kupon kuralları (eşik/clamp/kargo etkileşimi), ürün filtreleme-sıralama-sayfalama, auth kuralları, sipariş akışı (stok düşümü), admin ürün silme yan etkileri.

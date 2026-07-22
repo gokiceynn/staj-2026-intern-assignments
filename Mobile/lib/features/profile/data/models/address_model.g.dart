@@ -14,6 +14,7 @@ AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
   city: json['city'] as String,
   district: json['district'] as String,
   addressLine: json['addressLine'] as String,
+  zipCode: json['zipCode'] as String? ?? '',
 );
 
 Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
@@ -25,4 +26,5 @@ Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
       'city': instance.city,
       'district': instance.district,
       'addressLine': instance.addressLine,
+      'zipCode': instance.zipCode,
     };

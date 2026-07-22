@@ -48,11 +48,16 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Future<void> _placeOrder() async {
     final digits = _cardNumberController.text.replaceAll(' ', '');
+    final expiryParts = _expiryController.text.split('/');
     try {
       final order =
           await ref.read(checkoutControllerProvider.notifier).placeOrder(
                 address: _selectedAddress!,
-                cardLast4: digits.substring(digits.length - 4),
+                cardHolderName: _cardHolderController.text.trim(),
+                cardNumber: digits,
+                expiryMonth: int.parse(expiryParts[0]),
+                expiryYear: 2000 + int.parse(expiryParts[1]),
+                cvv: _cvvController.text.trim(),
               );
       if (!mounted) return;
       context.pushReplacement('/order-success/${order.id}');

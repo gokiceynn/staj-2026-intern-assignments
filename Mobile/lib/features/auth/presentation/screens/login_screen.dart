@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/app_config.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_providers.dart';
@@ -38,6 +39,47 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
       if (!mounted) return;
       context.go(widget.redirect ?? '/home');
+    } on AppException catch (e) {
+      if (!mounted) return;
+      // Hesap var ama e-posta doğrulanmamış — kullanıcıyı doğrulama
+      // ekranına dönebilmesi için yeni bir kod isteyip yönlendiriyoruz.
+      // Bu olmadan kullanıcı çıkmaza girerdi: giriş "doğrulanmamış" diye
+      // reddedilir, yeniden kayıt da "zaten var" diye reddedilirdi.
+      if (e is ValidationException && e.code == 'EMAIL_NOT_VERIFIED') {
+        await _resendAndGoToVerify();
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: AppColors.danger),
+      );
+    }
+  }
+
+  Future<void> _resendAndGoToVerify() async {
+    final email = _emailController.text.trim();
+    try {
+      final sessionId = await ref
+          .read(authControllerProvider.notifier)
+          .resendEmailCode(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Hesabın doğrulanmamış. Yeni bir kod gönderildi.',
+          ),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      context.push(
+        Uri(
+          path: '/verify-email',
+          queryParameters: {
+            'sessionId': sessionId,
+            'email': email,
+            if (widget.redirect != null) 'redirect': widget.redirect!,
+          },
+        ).toString(),
+      );
     } on AppException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -161,37 +203,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                       child: const Text('Hesabın yok mu? Üye ol'),
                     ),
-                    const Divider(height: 32),
-                    Text(
-                      'Demo hesaplarıyla tek dokunuşta giriş',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    TextButton(
+                      onPressed:
+                          busy ? null : () => context.push('/forgot-password'),
+                      child: const Text('Şifremi unuttum'),
+                    ),
+                    // Demo hesapları yalnızca MockDatabase'de seed edilir —
+                    // gerçek API modunda `demo@vbshop.com` yoktur, admin
+                    // hesabı ise `Seed:Admin:*` env değişkenleriyle farklı
+                    // bilgilerle açılır (bkz. API/docker/*/.env.example).
+                    if (AppConfig.useMock) ...[
+                      const Divider(height: 32),
+                      Text(
+                        'Demo hesaplarıyla tek dokunuşta giriş',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ActionChip(
-                          avatar: const Icon(Icons.person_outline, size: 18),
-                          label: const Text('Müşteri Girişi'),
-                          onPressed:
-                              busy ? null : () => _loginAsDemo(admin: false),
-                        ),
-                        const SizedBox(width: 8),
-                        ActionChip(
-                          avatar: const Icon(
-                            Icons.admin_panel_settings_outlined,
-                            size: 18,
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ActionChip(
+                            avatar: const Icon(Icons.person_outline, size: 18),
+                            label: const Text('Müşteri Girişi'),
+                            onPressed:
+                                busy ? null : () => _loginAsDemo(admin: false),
                           ),
-                          label: const Text('Admin Girişi'),
-                          onPressed:
-                              busy ? null : () => _loginAsDemo(admin: true),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 8),
+                          ActionChip(
+                            avatar: const Icon(
+                              Icons.admin_panel_settings_outlined,
+                              size: 18,
+                            ),
+                            label: const Text('Admin Girişi'),
+                            onPressed:
+                                busy ? null : () => _loginAsDemo(admin: true),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

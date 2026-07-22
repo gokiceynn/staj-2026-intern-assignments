@@ -13,3 +13,15 @@ const Map<String, IconData> _categoryIcons = {
 };
 
 IconData categoryIcon(String key) => _categoryIcons[key] ?? Icons.category;
+
+/// Gerçek API kategorileri ikon anahtarı taşımaz (yalnızca `iconId` — bir
+/// fotoğraf kaydı, seed'de yok); `slug`'a göre en yakın ikonu seçer.
+const Map<String, String> _iconBySlug = {
+  'elektronik': 'devices',
+  'giyim': 'checkroom',
+  'ev-yasam': 'chair',
+  'kozmetik': 'spa',
+  'spor-outdoor': 'sports_soccer',
+};
+
+String iconKeyForSlug(String slug) => _iconBySlug[slug] ?? '';

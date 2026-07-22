@@ -340,6 +340,9 @@ class MockDatabase {
 
   List<CategoryModel> getCategories() => List.unmodifiable(_categories);
 
+  /// Admin/satıcı paneli ürün listesi için — mock modda tek mağaza vardır.
+  List<ProductModel> get allProducts => List.unmodifiable(_products);
+
   ProductModel productById(String id) {
     final match = _products.where((p) => p.id == id);
     if (match.isEmpty) {

@@ -2,13 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di/core_providers.dart';
 import '../../data/datasources/cart_mock_data_source.dart';
+import '../../data/datasources/cart_remote_data_source.dart';
 import '../../data/repositories/cart_repository_impl.dart';
 import '../../domain/entities/cart.dart';
 import '../../domain/repositories/cart_repository.dart';
 
 final cartRepositoryProvider = Provider<CartRepository>(
   (ref) => CartRepositoryImpl(
-    CartMockDataSource(ref.watch(mockDatabaseProvider)),
+    mock: CartMockDataSource(ref.watch(mockDatabaseProvider)),
+    remote: CartRemoteDataSource(ref.watch(dioClientProvider)),
   ),
 );
 

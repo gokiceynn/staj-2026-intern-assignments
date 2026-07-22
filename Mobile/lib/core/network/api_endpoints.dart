@@ -20,6 +20,10 @@ abstract final class ApiEndpoints {
   static const accountMe = '/account/me';
   /// Geriye dönük alias; yeni kod `accountMe` kullanmalı.
   static const me = accountMe;
+  static const accountPassword = '/account/me/password';
+  static const accountEmail = '/account/me/email';
+  static const accountEmailVerify = '/account/me/email/verify';
+  static const accountEmailResend = '/account/me/email/resend';
 
   // customer
   static const deleteCustomerAccount = '/customer/me';

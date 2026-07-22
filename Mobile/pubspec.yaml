@@ -42,6 +42,10 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # Yerel bildirimler — yalnızca dev/test ortamında Mailpit'ten gelen OTP
+  # kodunu gerçek bir bildirim olarak göstermek için (bkz. core/dev/).
+  flutter_local_notifications: ^18.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -56,3 +60,4 @@ flutter:
 
   assets:
     - assets/data/
+    - assets/campaign/

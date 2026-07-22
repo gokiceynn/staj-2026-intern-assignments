@@ -94,16 +94,25 @@ class ProductQuery extends Equatable {
       minRating != null ||
       inStockOnly;
 
+  /// Gerçek API sözleşmesi: `GET /products?q=&categoryId=&minPrice=&
+  /// maxPrice=&inStock=&sortBy=&page=&size=`. `minRating`,
+  /// `flashDealsOnly`, `featuredOnly` backend'de karşılığı olmayan UI
+  /// kavramlarıdır — gönderilmez (bkz. `CatalogRemoteDataSource`).
+  /// `sortBy` zorunludur ve yalnızca `price_asc|price_desc|newest|
+  /// rating_desc` değerlerini kabul eder.
   Map<String, dynamic> toQueryParameters() => {
         if (q != null && q!.isNotEmpty) 'q': q,
-        if (categoryId != null) 'category': categoryId,
+        if (categoryId != null) 'categoryId': categoryId,
         if (minPrice != null) 'minPrice': minPrice,
         if (maxPrice != null) 'maxPrice': maxPrice,
-        if (minRating != null) 'minRating': minRating,
         if (inStockOnly) 'inStock': true,
-        if (flashDealsOnly) 'flashDeal': true,
-        if (featuredOnly) 'featured': true,
-        'sort': sort.name,
+        'sortBy': switch (sort) {
+          ProductSort.priceAsc => 'price_asc',
+          ProductSort.priceDesc => 'price_desc',
+          ProductSort.ratingDesc => 'rating_desc',
+          ProductSort.featured || ProductSort.newest || ProductSort.discount =>
+            'newest',
+        },
         'page': page,
         'size': size,
       };

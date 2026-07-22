@@ -31,6 +31,8 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
       TextEditingController(text: widget.existing?.district);
   late final _addressController =
       TextEditingController(text: widget.existing?.addressLine);
+  late final _zipCodeController =
+      TextEditingController(text: widget.existing?.zipCode);
   bool _saving = false;
 
   @override
@@ -41,6 +43,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
     _cityController.dispose();
     _districtController.dispose();
     _addressController.dispose();
+    _zipCodeController.dispose();
     super.dispose();
   }
 
@@ -57,6 +60,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
               city: _cityController.text.trim(),
               district: _districtController.text.trim(),
               addressLine: _addressController.text.trim(),
+              zipCode: _zipCodeController.text.trim(),
             ),
           );
       if (!mounted) return;
@@ -143,6 +147,16 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _zipCodeController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Posta Kodu',
+                  prefixIcon: Icon(Icons.local_post_office_outlined),
+                ),
+                validator: _required,
               ),
               const SizedBox(height: 14),
               TextFormField(

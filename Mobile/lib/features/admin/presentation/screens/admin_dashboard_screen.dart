@@ -17,7 +17,7 @@ class AdminDashboardScreen extends ConsumerWidget {
     final state = ref.watch(adminStatsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Paneli')),
+      appBar: AppBar(title: const Text('Satıcı Panelim')),
       body: state.when(
         data: (stats) => RefreshIndicator(
           onRefresh: () async => ref.invalidate(adminStatsProvider),
@@ -110,11 +110,11 @@ class AdminDashboardScreen extends ConsumerWidget {
                     color: AppColors.primary,
                   ),
                   title: const Text(
-                    'Ürün Yönetimi',
+                    'Ürünlerim',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                   subtitle: const Text(
-                    'Ürün ekle, düzenle, sil',
+                    'Sattığın ürünleri gör, ekle, düzenle, sil',
                     style: TextStyle(fontSize: 12),
                   ),
                   trailing: const Icon(Icons.chevron_right),

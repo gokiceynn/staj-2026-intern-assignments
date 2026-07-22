@@ -3,15 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/core_providers.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/profile_mock_data_source.dart';
+import '../../data/datasources/profile_remote_data_source.dart';
 import '../../data/repositories/profile_repository_impl.dart';
 import '../../domain/entities/address.dart';
 import '../../domain/repositories/profile_repository.dart';
 
 final profileRepositoryProvider = Provider<ProfileRepository>(
   (ref) => ProfileRepositoryImpl(
-    ProfileMockDataSource(
+    mock: ProfileMockDataSource(
       ref.watch(mockDatabaseProvider),
       ref.watch(tokenStoreProvider),
+    ),
+    remote: ProfileRemoteDataSource(
+      ref.watch(dioClientProvider),
+      () => ref.read(currentUserProvider)?.name ?? '',
     ),
   ),
 );

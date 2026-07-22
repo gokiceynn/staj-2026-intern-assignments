@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/core_providers.dart';
 import '../../../catalog/domain/entities/product.dart';
 import '../../data/datasources/favorites_local_data_source.dart';
+import '../../data/datasources/favorites_remote_data_source.dart';
 import '../../data/repositories/favorites_repository_impl.dart';
 import '../../domain/repositories/favorites_repository.dart';
 
 final favoritesRepositoryProvider = Provider<FavoritesRepository>(
   (ref) => FavoritesRepositoryImpl(
-    FavoritesLocalDataSource(ref.watch(mockDatabaseProvider)),
+    local: FavoritesLocalDataSource(ref.watch(mockDatabaseProvider)),
+    remote: FavoritesRemoteDataSource(ref.watch(dioClientProvider)),
   ),
 );
 

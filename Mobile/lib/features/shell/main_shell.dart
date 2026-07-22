@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../ai/presentation/widgets/ai_assistant_widget.dart';
 import '../cart/presentation/providers/cart_providers.dart';
+import 'presentation/welcome_campaign_modal.dart';
 
 /// Alt gezinme çubuğu kabuğu. Sekmeler arası durum
 /// [StatefulShellRoute.indexedStack] sayesinde korunur.
@@ -16,7 +18,13 @@ class MainShell extends ConsumerWidget {
     final cartCount = ref.watch(cartCountProvider);
 
     return Scaffold(
-      body: navigationShell,
+      body: Stack(
+        children: [
+          navigationShell,
+          const AiAssistantOverlay(),
+          const WelcomeCampaignTrigger(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: navigationShell.currentIndex,
         onTap: (index) => navigationShell.goBranch(

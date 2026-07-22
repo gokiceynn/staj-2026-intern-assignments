@@ -20,15 +20,16 @@ class OrderMockDataSource {
 
   Future<OrderModel> createOrder({
     required AddressModel address,
-    required String cardLast4,
+    required String cardNumber,
   }) async {
     final userId = await _requireUserId();
     // Banka/ödeme sağlayıcısı gecikmesi simülasyonu.
     await Future<void>.delayed(const Duration(milliseconds: 1400));
+    final digits = cardNumber.replaceAll(' ', '');
     return _db.createOrder(
       userId: userId,
       address: address,
-      cardLast4: cardLast4,
+      cardLast4: digits.substring(digits.length - 4),
     );
   }
 

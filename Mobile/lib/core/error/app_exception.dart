@@ -33,5 +33,9 @@ class NotFoundException extends AppException {
 /// 400/422 — iş kuralı veya form doğrulama hatası (ör. geçersiz kupon,
 /// stok yetersiz, e-posta zaten kayıtlı).
 class ValidationException extends AppException {
-  const ValidationException(super.message);
+  const ValidationException(super.message, {this.code});
+
+  /// Backend `errors` map'indeki anahtar (ör. `EMAIL_NOT_VERIFIED`) — belirli
+  /// durumlarda ekranın özel bir aksiyon sunabilmesi için (bkz. login ekranı).
+  final String? code;
 }

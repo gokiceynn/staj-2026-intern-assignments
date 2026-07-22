@@ -3,12 +3,66 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/config/app_config.dart';
+import '../../../../core/error/app_exception.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/theme_controller.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
+
+  Future<void> _confirmDeleteAccount(BuildContext context, WidgetRef ref) async {
+    final passwordController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hesabı Sil'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Bu işlem geri alınamaz. Onaylamak için şifreni gir.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Şifre'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Vazgeç'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Hesabı Sil',
+              style: TextStyle(color: AppColors.danger),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .deleteAccount(passwordController.text);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Hesabın silindi.')),
+      );
+    } on AppException catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: AppColors.danger),
+      );
+    }
+  }
 
   Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
@@ -171,7 +225,7 @@ class AccountScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    if (user.isAdmin)
+                    if (user.canManageStore)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -181,9 +235,9 @@ class AccountScreen extends ConsumerWidget {
                           color: AppColors.secondary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'ADMIN',
-                          style: TextStyle(
+                        child: Text(
+                          user.isAdmin ? 'ADMIN' : 'SATICI',
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
                             color: AppColors.secondary,
@@ -206,18 +260,29 @@ class AccountScreen extends ConsumerWidget {
               title: 'Adreslerim',
               onTap: () => context.push('/addresses'),
             ),
+            _MenuTile(
+              icon: Icons.edit_outlined,
+              title: 'Profili Düzenle',
+              onTap: () => context.push('/account/edit'),
+            ),
+            _MenuTile(
+              icon: Icons.password_outlined,
+              title: 'Şifre Değiştir',
+              onTap: () => context.push('/account/change-password'),
+            ),
           ],
           _MenuTile(
             icon: Icons.favorite_border,
             title: 'Favorilerim',
             onTap: () => context.go('/favorites'),
           ),
-          if (user?.isAdmin ?? false)
+          if (user?.canManageStore ?? false)
             _MenuTile(
               icon: Icons.admin_panel_settings_outlined,
-              title: 'Admin Paneli',
+              title: user!.isAdmin ? 'Admin Paneli' : 'Satıcı Panelim',
               iconColor: AppColors.secondary,
-              onTap: () => context.push('/admin'),
+              onTap: () =>
+                  context.push(user.isAdmin ? '/admin-platform' : '/admin'),
             ),
           _MenuTile(
             icon: Icons.palette_outlined,
@@ -250,6 +315,13 @@ class AccountScreen extends ConsumerWidget {
               iconColor: AppColors.danger,
               titleColor: AppColors.danger,
               onTap: () => _confirmLogout(context, ref),
+            ),
+            _MenuTile(
+              icon: Icons.delete_forever_outlined,
+              title: 'Hesabı Sil',
+              iconColor: AppColors.danger,
+              titleColor: AppColors.danger,
+              onTap: () => _confirmDeleteAccount(context, ref),
             ),
           ],
         ],

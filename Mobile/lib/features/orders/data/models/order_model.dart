@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../../core/config/app_config.dart';
 import '../../domain/entities/order.dart';
 
 part 'order_model.g.dart';
@@ -74,4 +75,57 @@ class OrderModel extends Order {
       );
 
   Map<String, dynamic> toJson() => _$OrderModelToJson(this);
+
+  /// Backend `OrderDetailDto` (`GetMyOrder`/`Checkout`) → yerel [Order]
+  /// şeması. Alan adları farklı (`orderId`/`totalAmount`/`shippingAmount`)
+  /// ve backend kart/alıcı adı tutmadığından bu alanlar en iyi çaba ile
+  /// (`recipientName` çağıran taraftan) doldurulur.
+  factory OrderModel.fromRemoteJson(
+    Map<String, dynamic> json, {
+    required String userId,
+    String? recipientName,
+  }) {
+    final address = json['shippingAddress'] as Map<String, dynamic>?;
+    final addressText = address == null
+        ? ''
+        : '${address['addressLine']}, ${address['district']} / ${address['city']}';
+    return OrderModel(
+      id: json['orderId'].toString(),
+      userId: userId,
+      items: (json['items'] as List)
+          .cast<Map<String, dynamic>>()
+          .map(
+            (item) => OrderItemModel(
+              productId: item['productId'].toString(),
+              name: (item['productTitle'] ?? '').toString(),
+              imageUrl: item['photoId'] != null
+                  ? '${AppConfig.apiBaseUrl}/photos/${item['photoId']}'
+                  : '',
+              price: (item['price'] as num).toDouble(),
+              quantity: (item['quantity'] as num).toInt(),
+            ),
+          )
+          .toList(),
+      recipientName: recipientName ?? (address?['phoneNumber'] ?? '').toString(),
+      addressText: addressText,
+      cardLast4: '••••',
+      subtotal: (json['subtotal'] as num).toDouble(),
+      couponDiscount: 0,
+      shippingFee: (json['shippingAmount'] as num).toDouble(),
+      total: (json['totalAmount'] as num).toDouble(),
+      status: statusFromRemote(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+  }
+
+  static OrderStatus statusFromRemote(String status) {
+    final s = status.toLowerCase();
+    if (s.contains('cancel')) return OrderStatus.cancelled;
+    if (s.contains('deliver')) return OrderStatus.delivered;
+    if (s.contains('ship')) return OrderStatus.shipped;
+    if (s.contains('prepar') || s.contains('process')) {
+      return OrderStatus.preparing;
+    }
+    return OrderStatus.pending;
+  }
 }

@@ -14,6 +14,7 @@ class AddressModel extends Address {
     required super.city,
     required super.district,
     required super.addressLine,
+    super.zipCode,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) =>
@@ -27,6 +28,7 @@ class AddressModel extends Address {
         city: address.city,
         district: address.district,
         addressLine: address.addressLine,
+        zipCode: address.zipCode,
       );
 
   Map<String, dynamic> toJson() => _$AddressModelToJson(this);

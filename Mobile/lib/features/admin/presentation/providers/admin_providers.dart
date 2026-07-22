@@ -8,18 +8,25 @@ import '../../../favorites/presentation/providers/favorites_providers.dart';
 import '../../../orders/domain/entities/order.dart';
 import '../../../orders/presentation/providers/order_providers.dart';
 import '../../data/datasources/admin_mock_data_source.dart';
+import '../../data/datasources/admin_remote_data_source.dart';
 import '../../data/repositories/admin_repository_impl.dart';
 import '../../domain/entities/admin_stats.dart';
 import '../../domain/repositories/admin_repository.dart';
 
 final adminRepositoryProvider = Provider<AdminRepository>(
   (ref) => AdminRepositoryImpl(
-    AdminMockDataSource(ref.watch(mockDatabaseProvider)),
+    mock: AdminMockDataSource(ref.watch(mockDatabaseProvider)),
+    remote: AdminRemoteDataSource(ref.watch(dioClientProvider)),
   ),
 );
 
 final adminStatsProvider = FutureProvider<AdminStats>(
   (ref) => ref.watch(adminRepositoryProvider).getStats(),
+);
+
+/// Satıcının kendi ürün listesi (Admin Paneli > Ürün Yönetimi).
+final adminMyProductsProvider = FutureProvider<List<Product>>(
+  (ref) => ref.watch(adminRepositoryProvider).getMyProducts(),
 );
 
 final adminOrdersProvider = FutureProvider<List<Order>>(
@@ -70,6 +77,7 @@ class AdminActions {
       ..invalidate(flashDealsProvider)
       ..invalidate(featuredProductsProvider)
       ..invalidate(topRatedProductsProvider)
-      ..invalidate(adminStatsProvider);
+      ..invalidate(adminStatsProvider)
+      ..invalidate(adminMyProductsProvider);
   }
 }

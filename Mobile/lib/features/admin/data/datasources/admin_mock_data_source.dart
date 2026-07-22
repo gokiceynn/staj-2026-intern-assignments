@@ -29,6 +29,9 @@ class AdminMockDataSource {
 
   Future<List<OrderModel>> getAllOrders() => _withLatency(_db.allOrders);
 
+  Future<List<ProductModel>> getMyProducts() =>
+      _withLatency(() => _db.allProducts);
+
   Future<OrderModel> updateOrderStatus(String orderId, OrderStatus status) =>
       _withLatency(() => _db.updateOrderStatus(orderId, status));
 

@@ -4,12 +4,19 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/admin_orders_screen.dart';
+import '../../features/admin/presentation/screens/admin_platform_dashboard_screen.dart';
+import '../../features/admin/presentation/screens/admin_platform_sellers_screen.dart';
+import '../../features/admin/presentation/screens/admin_platform_users_screen.dart';
 import '../../features/admin/presentation/screens/admin_product_form_screen.dart';
 import '../../features/admin/presentation/screens/admin_products_screen.dart';
+import '../../features/auth/domain/entities/user.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/catalog/domain/entities/product.dart';
 import '../../features/catalog/domain/entities/product_query.dart';
@@ -27,10 +34,20 @@ import '../../features/profile/domain/entities/address.dart';
 import '../../features/profile/presentation/screens/account_screen.dart';
 import '../../features/profile/presentation/screens/address_form_screen.dart';
 import '../../features/profile/presentation/screens/addresses_screen.dart';
+import '../../features/profile/presentation/screens/change_password_screen.dart';
+import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../../features/shell/main_shell.dart';
 
 /// Giriş gerektiren yol önekleri.
-const _protectedPrefixes = ['/checkout', '/orders', '/addresses', '/admin'];
+const _protectedPrefixes = [
+  '/checkout',
+  '/orders',
+  '/addresses',
+  '/admin',
+  '/admin-platform',
+  '/account/edit',
+  '/account/change-password',
+];
 
 final routerProvider = Provider<GoRouter>((ref) {
   // Auth durumu değişince redirect'lerin yeniden değerlendirilmesi için.
@@ -47,6 +64,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final auth = ref.read(authControllerProvider);
       final isLoggedIn = auth.value != null;
       final isAdmin = auth.value?.isAdmin ?? false;
+      // `/admin` satıcının kendi mağaza paneli — yalnızca Seller.
+      // `/admin-platform` gerçek platform denetimi — yalnızca Admin.
+      final isSeller = auth.value?.role == UserRole.seller;
       final authResolved = !auth.isLoading;
       final location = state.matchedLocation;
 
@@ -59,7 +79,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           queryParameters: {'redirect': state.uri.toString()},
         ).toString();
       }
-      if (location.startsWith('/admin') && authResolved && !isAdmin) {
+      if (location.startsWith('/admin-platform') && authResolved && !isAdmin) {
+        return '/home';
+      }
+      if (location.startsWith('/admin') &&
+          !location.startsWith('/admin-platform') &&
+          authResolved &&
+          !isSeller) {
         return '/home';
       }
       // Girişliyken login/register'a gitmeye çalışma → hedefe yönlendir.
@@ -79,6 +105,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (_, state) =>
             RegisterScreen(redirect: state.uri.queryParameters['redirect']),
+      ),
+      GoRoute(
+        path: '/verify-email',
+        builder: (_, state) => VerifyEmailScreen(
+          sessionId: state.uri.queryParameters['sessionId']!,
+          email: state.uri.queryParameters['email']!,
+          redirect: state.uri.queryParameters['redirect'],
+        ),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (_, _) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        builder: (_, state) => ResetPasswordScreen(
+          sessionId: state.uri.queryParameters['sessionId']!,
+          email: state.uri.queryParameters['email']!,
+        ),
       ),
       // Alt menülü ana kabuk — sekme durumları korunur.
       StatefulShellRoute.indexedStack(
@@ -116,6 +161,16 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/account',
                 builder: (_, _) => const AccountScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'edit',
+                    builder: (_, _) => const EditProfileScreen(),
+                  ),
+                  GoRoute(
+                    path: 'change-password',
+                    builder: (_, _) => const ChangePasswordScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -192,6 +247,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'orders',
             builder: (_, _) => const AdminOrdersScreen(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/admin-platform',
+        builder: (_, _) => const AdminPlatformDashboardScreen(),
+        routes: [
+          GoRoute(
+            path: 'users',
+            builder: (_, _) => const AdminPlatformUsersScreen(),
+          ),
+          GoRoute(
+            path: 'sellers',
+            builder: (_, _) => const AdminPlatformSellersScreen(),
           ),
         ],
       ),

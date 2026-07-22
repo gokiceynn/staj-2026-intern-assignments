@@ -5,6 +5,9 @@ import '../entities/admin_stats.dart';
 abstract interface class AdminRepository {
   Future<AdminStats> getStats();
 
+  /// Satıcının kendi ürünleri (genel katalog değil).
+  Future<List<Product>> getMyProducts();
+
   Future<List<Order>> getAllOrders();
 
   Future<Order> updateOrderStatus(String orderId, OrderStatus status);

@@ -1,23 +1,32 @@
+import '../../../../core/config/app_config.dart';
 import '../../domain/entities/address.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../datasources/profile_mock_data_source.dart';
+import '../datasources/profile_remote_data_source.dart';
 import '../models/address_model.dart';
 
-/// NOT (contract-first): `/customer/me/addresses` uçları v1.3 sözleşmesinde
-/// tanımlıdır; backend hazır olunca `ProfileRemoteDataSource` eklenip `AppConfig.useMock` ile
-/// seçilecek — auth/catalog'daki desenle aynı.
+/// `USE_MOCK` bayrağına göre mock veya gerçek API'ye yönlendirir —
+/// auth/catalog'daki desenle aynı.
 class ProfileRepositoryImpl implements ProfileRepository {
-  ProfileRepositoryImpl(this._mock);
+  ProfileRepositoryImpl({
+    required ProfileMockDataSource mock,
+    required ProfileRemoteDataSource remote,
+  })  : _mock = mock,
+        _remote = remote;
 
   final ProfileMockDataSource _mock;
+  final ProfileRemoteDataSource _remote;
 
   @override
-  Future<List<Address>> getAddresses() => _mock.getAddresses();
+  Future<List<Address>> getAddresses() =>
+      AppConfig.useMock ? _mock.getAddresses() : _remote.getAddresses();
 
   @override
-  Future<Address> saveAddress(Address address) =>
-      _mock.saveAddress(AddressModel.fromEntity(address));
+  Future<Address> saveAddress(Address address) => AppConfig.useMock
+      ? _mock.saveAddress(AddressModel.fromEntity(address))
+      : _remote.saveAddress(AddressModel.fromEntity(address));
 
   @override
-  Future<void> deleteAddress(String id) => _mock.deleteAddress(id);
+  Future<void> deleteAddress(String id) =>
+      AppConfig.useMock ? _mock.deleteAddress(id) : _remote.deleteAddress(id);
 }
