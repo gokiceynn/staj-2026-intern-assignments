@@ -2,7 +2,8 @@ import { parseApiResponse } from "@/lib/api/envelope";
 
 export type ApiClientOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
-  params?: Record<string, string | number | undefined>;
+  params?: Record<string, string | number | boolean | undefined>;
+  headers?: Record<string, string>;
 };
 
 function buildBffUrl(path: string, params?: ApiClientOptions["params"]): string {
@@ -24,8 +25,8 @@ export async function apiClient<T>(
   path: string,
   options: ApiClientOptions = {},
 ): Promise<T> {
-  const { body, params, headers: customHeaders, ...init } = options;
-  const headers = new Headers(customHeaders);
+  const { body, params, headers: optionHeaders, ...init } = options;
+  const headers = new Headers(optionHeaders);
 
   let requestBody: BodyInit | undefined;
   if (body !== undefined) {

@@ -128,9 +128,25 @@
     transform-origin: bottom right;
   }
 
+  @keyframes ai-assistant-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  .ai-assistant-float {
+    animation: ai-assistant-float 2.8s ease-in-out infinite;
+    will-change: transform;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .leaf-sway,
-    .leaf-sway--alt {
+    .leaf-sway--alt,
+    .ai-assistant-float {
       animation: none;
     }
   }

@@ -3,7 +3,13 @@ import type { Address } from "@/types/api";
 import type { AddressInput } from "@/features/addresses/schemas/address";
 
 export const addressesApi = {
-  list: () => apiClient<Address[]>("customer/me/addresses"),
+  list: async (): Promise<Address[]> => {
+    const data = await apiClient<{ items: Address[] } | Address[]>(
+      "customer/me/addresses",
+    );
+    if (Array.isArray(data)) return data;
+    return data.items ?? [];
+  },
 
   getById: (id: string) => apiClient<Address>(`customer/me/addresses/${id}`),
 

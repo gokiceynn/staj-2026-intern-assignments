@@ -7,10 +7,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/features/auth/schemas/auth";
 import { useLogin } from "@/features/auth/queries/use-auth";
+import { authApi } from "@/features/auth/api/auth-api";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/toast-context";
 import { ApiError, getFieldErrors } from "@/lib/api/envelope";
+import {
+  getAuthErrorMessage,
+  isAuthErrorCode,
+} from "@/lib/api/auth-errors";
 
 function LoginForm() {
   const router = useRouter();
@@ -22,8 +27,11 @@ function LoginForm() {
     register,
     handleSubmit,
     setError,
+    watch,
     formState: { errors },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
+
+  const emailValue = watch("email");
 
   const onSubmit = async (data: LoginInput) => {
     try {
@@ -34,16 +42,56 @@ function LoginForm() {
       router.refresh();
     } catch (err) {
       const fieldErrors = getFieldErrors(err);
+      const isUnverified =
+        isAuthErrorCode(err, "EMAIL_NOT_VERIFIED") ||
+        (err instanceof ApiError &&
+          err.message.toLowerCase().includes("verification"));
+
+      const isRateLimited = isAuthErrorCode(err, "RATE_LIMITED");
+
+      if (isRateLimited) {
+        showToast(getAuthErrorMessage(err, "Giriş başarısız"), "error");
+        return;
+      }
+
+      if (isUnverified) {
+        try {
+          const session = await authApi.resendEmail(data.email);
+          showToast(
+            "E-posta doğrulanmamış. Yeni kod gönderildi — doğrulama sayfasına yönlendiriliyorsunuz.",
+            "error",
+          );
+          router.push(
+            `/verify-email?sessionId=${session.sessionId}&email=${encodeURIComponent(data.email)}`,
+          );
+          return;
+        } catch (resendErr) {
+          const cooldown =
+            resendErr instanceof ApiError &&
+            Boolean(resendErr.errors?.OTP_COOLDOWN);
+
+          showToast(
+            cooldown
+              ? "E-posta doğrulanmamış. Az önce kod gönderilmiş olabilir — Mailpit (localhost:8026) adresine bakın."
+              : "E-posta doğrulanmamış. Doğrulama sayfasından yeni kod isteyebilirsiniz.",
+            "error",
+          );
+          router.push(
+            `/verify-email?email=${encodeURIComponent(data.email)}`,
+          );
+          return;
+        }
+      }
+
       if (fieldErrors) {
         for (const [field, messages] of Object.entries(fieldErrors)) {
-          setError(field as keyof LoginInput, { message: messages[0] });
+          if (field in data) {
+            setError(field as keyof LoginInput, { message: messages[0] });
+          }
         }
-      } else {
-        showToast(
-          err instanceof ApiError ? err.message : "Giriş başarısız",
-          "error",
-        );
       }
+
+      showToast(getAuthErrorMessage(err, "Giriş başarısız"), "error");
     }
   };
 
@@ -66,6 +114,16 @@ function LoginForm() {
         <div className="flex justify-between text-sm">
           <Link href="/forgot-password" className="text-brand-600 hover:underline">
             Şifremi unuttum
+          </Link>
+          <Link
+            href={
+              emailValue
+                ? `/verify-email?email=${encodeURIComponent(emailValue)}`
+                : "/verify-email"
+            }
+            className="text-brand-600 hover:underline"
+          >
+            E-posta doğrula
           </Link>
         </div>
         <Button type="submit" className="w-full" loading={login.isPending}>

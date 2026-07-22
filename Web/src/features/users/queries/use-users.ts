@@ -41,3 +41,27 @@ export function useDeleteAccount() {
     },
   });
 }
+
+export function useStartEmailChange() {
+  return useMutation({
+    mutationFn: (input: { newEmail: string; password: string }) =>
+      usersApi.startEmailChange(input),
+  });
+}
+
+export function useVerifyEmailChange() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { sessionId: string; code: string }) =>
+      usersApi.verifyEmailChange(input),
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.auth.me, data);
+    },
+  });
+}
+
+export function useResendEmailChange() {
+  return useMutation({
+    mutationFn: (password: string) => usersApi.resendEmailChange(password),
+  });
+}

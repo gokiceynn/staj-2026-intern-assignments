@@ -116,7 +116,7 @@ export default function CartPage() {
             <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md">
               <Image
                 src={item.photoUrl}
-                alt={item.productTitle}
+                alt={item.productTitle || "Ürün görseli"}
                 fill
                 className="object-cover"
                 sizes="80px"

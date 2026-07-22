@@ -165,3 +165,170 @@ export type ProductQueryParams = {
   maxPrice?: number;
   sortBy?: ProductSortBy;
 };
+
+export type ReviewPhoto = { photoId: string };
+export type ReviewUser = { id: string; displayName: string };
+export type Review = {
+  id: string;
+  productId: string;
+  user: ReviewUser;
+  rating: number;
+  comment: string;
+  photos: ReviewPhoto[];
+  isVerifiedPurchase: boolean;
+  createdAt: string;
+  updatedAt?: string | null;
+};
+export type ReviewSummary = {
+  averageRating: number;
+  totalReviewCount: number;
+  ratingDistribution: Record<string, number>;
+};
+export type ReviewPage = {
+  summary: ReviewSummary;
+  reviews: Paginated<Review>;
+};
+
+export type StatusItem = { code: string; label: string; color: string | null };
+export type StatusGroup = { key: string; items: StatusItem[] };
+
+export type PhotoUploadResult = { photoId: string; uploadedAt: string };
+
+export type SellerProfile = {
+  id: string;
+  storeName: string;
+  description: string;
+  logoId: string | null;
+  taxNumber: string;
+  taxOffice: string;
+  rating: number;
+  isActive: boolean;
+  createdAt: string;
+};
+
+export type SellerDashboard = {
+  productCount: number;
+  activeProductCount: number;
+  lowStockProductCount: number;
+  totalOrderCount: number;
+  paidPackageCount: number;
+  preparingPackageCount: number;
+  shippedPackageCount: number;
+  deliveredPackageCount: number;
+  cancelledPackageCount: number;
+  grossSalesAmount: number;
+  currency: string;
+};
+
+export type SellerProductCard = {
+  product: ProductListItem;
+  isActive: boolean;
+};
+
+export type SellerProductDetail = {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  stock: number;
+  photoId: string | null;
+  photoIds: string[];
+  categoryId: string;
+  features: Record<string, string>;
+  isActive: boolean;
+};
+
+export type SellerPackageListItem = {
+  packageId: string;
+  orderId: string;
+  orderNumber: string;
+  status: string;
+  itemCount: number;
+  subtotal: number;
+  createdAt: string;
+};
+
+export type SellerPackageDetail = {
+  packageId: string;
+  orderId: string;
+  orderNumber: string;
+  status: string;
+  createdAt: string;
+  customer: { fullName: string; phoneNumber: string };
+  items: OrderItem[];
+  shipment: { trackingNumber: string | null; trackingUrl: string | null } | null;
+};
+
+export type ShippingCarrier = {
+  id: string;
+  name: string;
+  code: string;
+  logoId: string | null;
+  flatFee: number;
+  estimatedDeliveryDays: number;
+  trackingUrlTemplate: string;
+  isActive: boolean;
+};
+
+export type AdminDashboard = {
+  userCount: number;
+  customerCount: number;
+  sellerCount: number;
+  activeProductCount: number;
+  orderCount: number;
+  grossSalesAmount: number;
+  currency: string;
+};
+
+export type AdminUserListItem = {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  isActive: boolean;
+  isEmailVerified: boolean;
+  createdAt: string;
+};
+
+export type AdminUserDetail = AdminUserListItem & {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  securityVersion: number;
+  lastLoginAt: string | null;
+};
+
+export type AdminSellerListItem = {
+  id: string;
+  accountId: string;
+  storeName: string;
+  email: string;
+  rating: number;
+  isActive: boolean;
+  productCount: number;
+};
+
+export type AdminSellerDetail = {
+  id: string;
+  accountId: string;
+  storeName: string;
+  description: string;
+  taxNumber: string;
+  taxOffice: string;
+  logoId: string | null;
+  rating: number;
+  isActive: boolean;
+  productCount: number;
+  createdAt: string;
+};
+
+export type AdminOrderListItem = {
+  orderId: string;
+  orderNumber: string;
+  customerEmail: string;
+  totalAmount: number;
+  currency: string;
+  status: string;
+  packageCount: number;
+  createdAt: string;
+};

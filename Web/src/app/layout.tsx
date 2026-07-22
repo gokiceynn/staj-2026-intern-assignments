@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/Header";
-import { BackendNoticeBanner } from "@/components/layout/BackendNoticeBanner";
 import { Footer } from "@/components/layout/Footer";
 import { AiAssistant } from "@/components/ai/AiAssistant";
 import { WelcomeCampaignModal } from "@/components/campaign/WelcomeCampaignModal";
@@ -25,7 +24,6 @@ export default function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <body className={`${inter.className} flex min-h-screen flex-col`}>
         <Providers>
-          <BackendNoticeBanner />
           <Header />
           <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
             {children}

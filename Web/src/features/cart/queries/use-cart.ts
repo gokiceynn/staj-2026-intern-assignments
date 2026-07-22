@@ -1,9 +1,11 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePathname, useRouter } from "next/navigation";
 import { cartApi } from "@/features/cart/api/cart-api";
 import { queryKeys } from "@/lib/query/keys";
 import { useCurrentUser } from "@/features/auth/queries/use-auth";
+import { ApiError } from "@/lib/api/envelope";
 import type { AddToCartInput, UpdateCartItemInput } from "@/features/cart/schemas/cart";
 
 export function useCart() {
@@ -20,8 +22,18 @@ export function useCart() {
 
 export function useAddToCart() {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: user, isLoading: authLoading } = useCurrentUser();
+
   return useMutation({
-    mutationFn: (input: AddToCartInput) => cartApi.addItem(input),
+    mutationFn: async (input: AddToCartInput) => {
+      if (!authLoading && !user) {
+        router.push(`/login?redirect=${encodeURIComponent(pathname || "/")}`);
+        throw new ApiError("Sepete eklemek için giriş yapmalısınız", 401);
+      }
+      return cartApi.addItem(input);
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.cart.all, data);
     },
