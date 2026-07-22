@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useOrder, useCancelOrder } from "@/features/orders/queries/use-orders";
 import { cancelOrderSchema, type CancelOrderInput } from "@/features/orders/schemas/order";
 import { Price } from "@/components/ui/Price";
-import { Badge } from "@/components/ui/Badge";
+import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
@@ -75,7 +75,7 @@ export default function OrderDetailPage() {
           <h1 className="mt-2 text-2xl font-bold">{order.orderNumber}</h1>
           <p className="text-sm text-text-muted">{formatDate(order.createdAt)}</p>
         </div>
-        <Badge variant="success">{order.status}</Badge>
+        <OrderStatusBadge status={order.status} />
       </div>
 
       <div className="rounded-lg border border-border bg-surface p-4">

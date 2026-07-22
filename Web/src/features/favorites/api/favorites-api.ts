@@ -1,4 +1,6 @@
 import { apiClient } from "@/lib/api/client";
+import { normalizePaginated } from "@/lib/api/pagination";
+import { withPhotoUrls } from "@/lib/utils/photo-url";
 import type { Paginated, ProductListItem } from "@/types/api";
 
 type FavoritesQuery = {
@@ -7,10 +9,12 @@ type FavoritesQuery = {
 };
 
 export const favoritesApi = {
-  list: ({ page = 1, size = 12 }: FavoritesQuery = {}) =>
-    apiClient<Paginated<ProductListItem>>(
-      `favorites?page=${page}&size=${size}`,
-    ),
+  list: async ({ page = 1, size = 12 }: FavoritesQuery = {}): Promise<Paginated<ProductListItem>> => {
+    const result = normalizePaginated<ProductListItem>(
+      await apiClient<unknown>(`favorites?page=${page}&size=${size}`),
+    );
+    return { ...result, items: withPhotoUrls(result.items) };
+  },
 
   add: (productId: string) =>
     apiClient<{ productId: string; addedAt: string }>(

@@ -2,7 +2,9 @@ import { HeroPromo } from "@/components/home/HeroPromo";
 import { QuickDealStrip } from "@/components/home/QuickDealStrip";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { fetchPublic, productListPath } from "@/lib/api/server";
-import type { Paginated, ProductListItem } from "@/types/api";
+import { normalizePaginated } from "@/lib/api/pagination";
+import { withPhotoUrls } from "@/lib/utils/photo-url";
+import type { ProductListItem } from "@/types/api";
 
 export default async function HomePage() {
   let popular: ProductListItem[] = [];
@@ -10,15 +12,13 @@ export default async function HomePage() {
 
   try {
     const [popularData, ratedData] = await Promise.all([
-      fetchPublic<Paginated<ProductListItem>>(
-        productListPath({ page: 1, size: 8 }),
-      ),
-      fetchPublic<Paginated<ProductListItem>>(
+      fetchPublic<unknown>(productListPath({ page: 1, size: 8 })),
+      fetchPublic<unknown>(
         productListPath({ page: 1, size: 4, sortBy: "rating_desc" }),
       ),
     ]);
-    popular = popularData.items;
-    rated = ratedData.items;
+    popular = withPhotoUrls(normalizePaginated<ProductListItem>(popularData).items);
+    rated = withPhotoUrls(normalizePaginated<ProductListItem>(ratedData).items);
   } catch {
     // Backend yoksa boş grid + statik kampanyalar gösterilir
   }

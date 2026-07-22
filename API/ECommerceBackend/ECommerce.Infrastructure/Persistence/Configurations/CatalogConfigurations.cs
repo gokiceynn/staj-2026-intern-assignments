@@ -26,9 +26,9 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         b.ToTable("products", t =>
         {
-            t.HasCheckConstraint("ck_products_price", "price > 0");
-            t.HasCheckConstraint("ck_products_stock", "stock >= 0");
-            t.HasCheckConstraint("ck_products_rating", "rating_average >= 0 AND rating_average <= 5");
+            t.HasCheckConstraint("ck_products_price", "`Price` > 0");
+            t.HasCheckConstraint("ck_products_stock", "`Stock` >= 0");
+            t.HasCheckConstraint("ck_products_rating", "`RatingAverage` >= 0 AND `RatingAverage` <= 5");
         });
         b.ConfigureEntityBase();
         b.Property(x => x.SellerProfileId).HasColumnType("varchar(40)").HasMaxLength(40);

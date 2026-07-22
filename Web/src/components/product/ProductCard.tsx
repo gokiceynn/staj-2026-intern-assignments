@@ -13,17 +13,39 @@ type ProductCardProps = {
   product: ProductListItem;
   onAddToCart?: (productId: string) => void;
   adding?: boolean;
+  discountPercent?: number;
 };
 
-export function ProductCard({ product, onAddToCart, adding }: ProductCardProps) {
+export function ProductCard({
+  product,
+  onAddToCart,
+  adding,
+  discountPercent,
+}: ProductCardProps) {
   const { toggle, has, isAvailable } = useFavorites();
   const lowStock = product.stock > 0 && product.stock <= 5;
-  const freeShipping = product.price >= 500;
+  const salePrice =
+    discountPercent && discountPercent > 0
+      ? Math.round(product.price * (1 - discountPercent / 100) * 100) / 100
+      : null;
+  const freeShipping = (salePrice ?? product.price) >= 500;
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-card transition-all hover:border-brand-200 hover:shadow-md">
-      {freeShipping && (
-        <Badge className="absolute left-2 top-2 z-10 bg-success/90 text-white">
+      {discountPercent ? (
+        <Badge className="absolute left-2 top-2 z-10 bg-deal text-white">
+          %{discountPercent} İndirim
+        </Badge>
+      ) : (
+        freeShipping && (
+          <Badge className="absolute left-2 top-2 z-10 bg-success/90 text-white">
+            Kargo Bedava
+          </Badge>
+        )
+      )}
+
+      {discountPercent && freeShipping && (
+        <Badge className="absolute left-2 top-10 z-10 bg-success/90 text-white">
           Kargo Bedava
         </Badge>
       )}
@@ -71,7 +93,19 @@ export function ProductCard({ product, onAddToCart, adding }: ProductCardProps) 
 
         <div className="mt-auto flex items-end justify-between gap-2 pt-1">
           <div>
-            <Price amount={product.price} size="lg" />
+            {salePrice !== null ? (
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-text-muted line-through">
+                  {new Intl.NumberFormat("tr-TR", {
+                    style: "currency",
+                    currency: "TRY",
+                  }).format(product.price)}
+                </span>
+                <Price amount={salePrice} size="lg" />
+              </div>
+            ) : (
+              <Price amount={product.price} size="lg" />
+            )}
             {lowStock && (
               <p className="text-xs font-medium text-deal">Son {product.stock} ürün!</p>
             )}

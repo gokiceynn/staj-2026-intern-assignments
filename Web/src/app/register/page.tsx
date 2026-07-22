@@ -32,23 +32,38 @@ export default function RegisterPage() {
       );
     } catch (err) {
       const fieldErrors = getFieldErrors(err);
+      let shownOnField = false;
+
       if (fieldErrors) {
         for (const [field, messages] of Object.entries(fieldErrors)) {
-          setError(field as keyof RegisterInput, { message: messages[0] });
+          if (field in data) {
+            setError(field as keyof RegisterInput, { message: messages[0] });
+            shownOnField = true;
+          }
         }
-      } else {
-        showToast(
-          err instanceof ApiError ? err.message : "Kayıt başarısız",
-          "error",
-        );
+      }
+
+      const message =
+        err instanceof ApiError
+          ? err.code === 409
+            ? "Bu e-posta adresi zaten kayıtlı. Giriş yapmayı veya e-posta doğrulamayı deneyin."
+            : err.message
+          : "Kayıt başarısız";
+
+      if (!shownOnField || err instanceof ApiError) {
+        showToast(message, "error");
       }
     }
+  };
+
+  const onInvalid = () => {
+    showToast("Lütfen tüm alanları kontrol edin (şifre en az 12 karakter)", "error");
   };
 
   return (
     <div className="mx-auto max-w-md">
       <h1 className="mb-6 text-2xl font-bold">Kayıt Ol</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Ad"
@@ -69,15 +84,20 @@ export default function RegisterPage() {
         />
         <Input
           label="Telefon"
+          placeholder="0555 123 45 67"
           error={errors.phoneNumber?.message}
           {...register("phoneNumber")}
         />
         <Input
           label="Şifre"
           type="password"
+          placeholder="En az 12 karakter"
           error={errors.password?.message}
           {...register("password")}
         />
+        <p className="text-xs text-text-muted">
+          Şifre en az 12 karakter; büyük harf, küçük harf ve rakam içermeli.
+        </p>
         <Input
           label="Şifre Tekrar"
           type="password"
@@ -92,6 +112,10 @@ export default function RegisterPage() {
         Zaten hesabınız var mı?{" "}
         <Link href="/login" className="text-brand-600 hover:underline">
           Giriş yapın
+        </Link>
+        {" · "}
+        <Link href="/register/seller" className="text-brand-600 hover:underline">
+          Satıcı kaydı
         </Link>
       </p>
     </div>

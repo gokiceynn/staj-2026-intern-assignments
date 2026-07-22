@@ -6,9 +6,16 @@ export function formatCurrency(amount: number, locale = "tr-TR"): string {
   }).format(amount);
 }
 
-export function formatDate(value: string, locale = "tr-TR"): string {
+export function formatDate(
+  value: string | null | undefined,
+  locale = "tr-TR",
+  fallback = "—",
+): string {
+  if (!value) return fallback;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return fallback;
   return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }

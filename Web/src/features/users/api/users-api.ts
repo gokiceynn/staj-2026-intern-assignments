@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api/client";
-import type { User } from "@/types/api";
+import type { OtpSession, User } from "@/types/api";
 import type {
   ChangePasswordInput,
   UpdateProfileInput,
@@ -16,4 +16,19 @@ export const usersApi = {
 
   deleteMe: (password: string) =>
     apiClient<null>("customer/me", { method: "DELETE", body: { password } }),
+
+  startEmailChange: (input: { newEmail: string; password: string }) =>
+    apiClient<OtpSession>("account/me/email", { method: "PUT", body: input }),
+
+  verifyEmailChange: (input: { sessionId: string; code: string }) =>
+    apiClient<User>("account/me/email/verify", {
+      method: "POST",
+      body: input,
+    }),
+
+  resendEmailChange: (password: string) =>
+    apiClient<OtpSession>("account/me/email/resend", {
+      method: "POST",
+      body: { password },
+    }),
 };
