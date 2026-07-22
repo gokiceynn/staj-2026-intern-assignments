@@ -32,6 +32,8 @@ class HomeScreen extends ConsumerWidget {
             children: [
               const _HomeHeader(),
               const _BannerCarousel(),
+              const _QuickCategoryGrid(),
+              const _PromoCardsRow(),
               const _CategoryStrip(),
               SectionHeader(
                 title: '⚡ Süper Fırsatlar',
@@ -292,6 +294,263 @@ class _BannerCarouselState extends State<_BannerCarousel> {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _QuickLink {
+  const _QuickLink({
+    required this.label,
+    required this.icon,
+    required this.background,
+    required this.foreground,
+    required this.query,
+    this.badge,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+  final Map<String, String> query;
+  final String? badge;
+}
+
+/// Web ana sayfasındaki renkli hızlı kategori kartlarının (Süper Fırsat,
+/// Elektronik, Moda, Ev & Yaşam, Yüksek Puan, Yeni Gelenler) mobil karşılığı.
+class _QuickCategoryGrid extends StatelessWidget {
+  const _QuickCategoryGrid();
+
+  static const _links = [
+    _QuickLink(
+      label: 'Süper Fırsat',
+      icon: Icons.bolt_rounded,
+      background: Color(0xFFFEF3C7),
+      foreground: Color(0xFFD97706),
+      query: {'flash': '1', 'title': 'Süper Fırsatlar'},
+    ),
+    _QuickLink(
+      label: 'Elektronik',
+      icon: Icons.smartphone_rounded,
+      background: Color(0xFFDBEAFE),
+      foreground: Color(0xFF2563EB),
+      query: {'category': 'elektronik', 'title': 'Elektronik'},
+    ),
+    _QuickLink(
+      label: 'Moda',
+      icon: Icons.checkroom_rounded,
+      background: Color(0xFFFCE7F3),
+      foreground: AppColors.deal,
+      query: {'category': 'giyim', 'title': 'Moda'},
+    ),
+    _QuickLink(
+      label: 'Ev & Yaşam',
+      icon: Icons.chair_rounded,
+      background: Color(0xFFD1FAE5),
+      foreground: AppColors.success,
+      query: {'category': 'ev-yasam', 'title': 'Ev & Yaşam'},
+    ),
+    _QuickLink(
+      label: 'Yüksek Puan',
+      icon: Icons.star_rounded,
+      background: Color(0xFFEDE9FE),
+      foreground: AppColors.secondary,
+      query: {'sortBy': 'rating_desc', 'title': 'Yüksek Puan'},
+    ),
+    _QuickLink(
+      label: 'Yeni Gelenler',
+      icon: Icons.auto_awesome_rounded,
+      background: Color(0xFFE0E7FF),
+      foreground: Color(0xFF4338CA),
+      badge: 'YENİ',
+      query: {'sortBy': 'newest', 'title': 'Yeni Gelenler'},
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Row(
+        children: [
+          for (final link in _links)
+            Expanded(
+              child: InkWell(
+                onTap: () => context.push(
+                  Uri(path: '/products', queryParameters: link.query)
+                      .toString(),
+                ),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    children: [
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: link.background,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              link.icon,
+                              color: link.foreground,
+                              size: 22,
+                            ),
+                          ),
+                          if (link.badge != null)
+                            Positioned(
+                              top: -4,
+                              right: -6,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  link.badge!,
+                                  style: const TextStyle(
+                                    fontSize: 7,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        link.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Web hero bölümündeki pembe "Flaş Fırsat" ve "Favorilerim" kartlarının
+/// mobil karşılığı.
+class _PromoCardsRow extends StatelessWidget {
+  const _PromoCardsRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () => context.push(
+                '/products?flash=1&title=En%20Be%C4%9Fenilenler',
+              ),
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                height: 84,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.deal, Color(0xFFF472B6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'FLAŞ FIRSAT',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'En Beğenilenler',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: InkWell(
+              onTap: () => context.push('/favorites'),
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                height: 84,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color:
+                        Theme.of(context).dividerTheme.color ??
+                        AppColors.outline,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.favorite_rounded,
+                          size: 14,
+                          color: AppColors.danger,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Favorilerim',
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w800,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Listeni Oluştur',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

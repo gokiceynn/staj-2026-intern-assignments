@@ -3,7 +3,8 @@ import '../../../../core/network/dio_client.dart';
 import '../../../catalog/data/models/product_model.dart';
 
 /// Gerçek API favori uçları (`ShoppingController`).
-/// `GET /favorites` → `PagedResult<ProductCard>` (`{ items, page, pageSize, totalCount }`).
+/// `GET /favorites` → `{ page: { items, page, pageSize, totalCount, totalPages } }`
+/// (diğer sayfalanmış uçlarla aynı iç içe zarf, bkz. `catalog_remote_data_source.dart`).
 /// Backend "favori mi" bilgisini tekil sorgulamadığından, toggle için önce
 /// mevcut favori id kümesi çekilip üyeliğe göre ekle/çıkar kararı verilir.
 class FavoritesRemoteDataSource {
@@ -17,7 +18,8 @@ class FavoritesRemoteDataSource {
         ApiEndpoints.favorites,
         queryParameters: {'page': 1, 'size': 100},
       );
-      return (response.data!['items'] as List)
+      final page = response.data!['page'] as Map<String, dynamic>;
+      return (page['items'] as List)
           .cast<Map<String, dynamic>>()
           .map(ProductModel.fromSummaryJson)
           .toList();

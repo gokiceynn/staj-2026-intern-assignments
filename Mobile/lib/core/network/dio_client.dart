@@ -8,6 +8,11 @@ import '../storage/token_store.dart';
 /// Gerçek API'ye giden tüm istekler için ortak Dio örneği üretir.
 ///
 /// - Her isteğe otomatik `Authorization: Bearer <token>` ekler.
+/// - `ApiResponse` zarfını (`{data, isSuccess, message, ...}`) açıp
+///   `response.data`'yı doğrudan `data` alanına indirger — remote data
+///   source'lar zarfı bilmeden JSON'u parse eder.
+/// - 401 aldığında `refresh-token` ile oturumu bir kez yeniler ve isteği
+///   otomatik tekrar dener; yenileme de başarısızsa oturumu temizler.
 /// - DioException'ları kullanıcıya gösterilebilir [AppException]'a çevirir.
 /// - Debug modda istek/yanıt loglar.
 class DioClient {

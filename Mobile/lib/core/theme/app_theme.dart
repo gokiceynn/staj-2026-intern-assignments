@@ -13,6 +13,9 @@ abstract final class AppColors {
   static const inkSoft = Color(0xFF6B7280);
   static const surfaceMuted = Color(0xFFF5F6F8);
   static const outline = Color(0xFFE7E9EF);
+
+  /// Flaş fırsat / kampanya vurgu rengi (web: `--color-deal`).
+  static const deal = Color(0xFFDB2777);
 }
 
 /// Light + Dark tema. Ekranlar renkleri doğrudan değil, mümkün olduğunca
