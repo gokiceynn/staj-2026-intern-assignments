@@ -36,7 +36,7 @@ export const authApi = {
       body: input,
     }),
 
-  getMe: () => apiClient<User>("users/me"),
+  getMe: () => apiClient<User>("account/me"),
 };
 
 export type { LoginData };

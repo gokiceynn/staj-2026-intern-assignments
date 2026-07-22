@@ -8,7 +8,13 @@ import { refreshAccessToken } from "@/lib/auth/refresh-manager";
 import { getServerApiBaseUrl } from "@/lib/api/config";
 import type { AuthTokens } from "@/types/api";
 
-const PUBLIC_GET_PATTERNS = [/^products$/, /^products\/[^/]+$/, /^photos\/[^/]+$/];
+const PUBLIC_GET_PATTERNS = [
+  /^products$/,
+  /^products\/[^/]+$/,
+  /^photos\/[^/]+$/,
+  /^categories$/,
+  /^metadata\/statuses$/,
+];
 
 function isPublicGet(segments: string[], method: string): boolean {
   if (method !== "GET") return false;

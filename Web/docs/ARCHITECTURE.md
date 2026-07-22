@@ -2,7 +2,7 @@
 
 ## Overview
 
-VBShop Web, Next.js App Router ile B2C e-ticaret arayüzüdür. Tüm iş kuralları backend API sözleşmesine (`/api/v1`) bağlıdır.
+VBShop Web, Next.js App Router ile B2C e-ticaret arayüzüdür. Tüm iş kuralları backend API sözleşmesine ([`Docs/ecommerce_api_contract_v1.3.md`](../../Docs/ecommerce_api_contract_v1.3.md), `/api/v1`) bağlıdır.
 
 ```
 Browser
@@ -19,18 +19,14 @@ src/
   components/
     ui/                   # Design system primitives
     layout/               # Header, Footer, ThemeToggle
-    product/ cart/ ...    # Domain UI
+    product/ home/        # Domain UI
   features/
-    auth/ products/ cart/ orders/ users/ addresses/ favorites/
-      api/ queries/ mutations/ schemas/ components/ types/
+    auth/ products/ cart/ orders/ users/ addresses/ favorites/ categories/
+      api/ queries/ schemas/
   lib/
     api/                  # client, server, envelope parser
     auth/                 # cookies, session, refresh mutex
-    query/                # TanStack Query provider
-    validation/           # Shared Zod schemas
-    utils/
-  hooks/
-  stores/                 # Zustand (UI-only, no card/token storage)
+    query/                # TanStack Query keys
   types/
 ```
 
@@ -38,7 +34,10 @@ src/
 
 - Access + refresh token: **httpOnly**, **Secure** (prod), **SameSite=Lax** cookies.
 - Refresh token **asla** localStorage’da tutulmaz.
-- `lib/auth/refresh-manager.ts`: tek uçuş refresh (concurrent istekler aynı promise’i bekler).
+- Kayıt: `POST /auth/customer/register` (BFF: `/api/auth/register` → upstream customer register).
+- Profil: `GET /account/me`; adresler: `/customer/me/addresses`; hesap silme: `DELETE /customer/me`.
+- Login response: `account` (route handler istemciye `user` olarak map eder).
+- `lib/auth/refresh-manager.ts`: tek uçuş refresh mutex.
 - Refresh başarısız → cookies temizlenir → `/login?redirect=...`.
 
 ## API client rules
@@ -56,22 +55,29 @@ src/
 | Metadata generation | TanStack Query hooks |
 | Protected layout session check | Filters, debounce, modals |
 
-## Favorites (gap)
+## Favorites
 
-`FavoritesRepository` interface → `LocalFavoritesRepository` (dev-only). Swap-ready for future API.
+`features/favorites/api/favorites-api.ts` — `GET/POST/DELETE /favorites` (Customer, korumalı).
 
-## Categories (gap)
+## Categories
 
-Derived from product `category` fields in list responses; cached in query client. Not authoritative.
+`features/categories/api/categories-api.ts` — `GET /categories` (anonim, ağaç yapısı).
 
-## Cart remove (gap)
+## Cart
 
-No DELETE endpoint → remove UI disabled in production; no `quantity=0` hack.
+`DELETE /cart/items/{productId}` ve `DELETE /cart` desteklenir.
+
+## Henüz UI’da olmayan sözleşme özellikleri
+
+- Ürün yorumları (`/products/{id}/reviews`)
+- `GET /metadata/statuses` (sipariş durum etiketleri)
+- Checkout `Idempotency-Key` header
+- Profil e-posta OTP ve hesap silme ekranları
 
 ## Testing
 
-- **Vitest:** envelope, zod, utils, components (MSW).
-- **Playwright:** critical flows against dev server + MSW or mock BFF.
+- **Vitest:** envelope, utils, components.
+- **Playwright:** critical flows.
 - Production bundle MSW’ye bağlı değil.
 
 ## CI

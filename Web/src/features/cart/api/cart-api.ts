@@ -16,4 +16,9 @@ export const cartApi = {
       method: "PUT",
       body: input,
     }),
+
+  removeItem: (productId: string) =>
+    apiClient<Cart>(`cart/items/${productId}`, { method: "DELETE" }),
+
+  clear: () => apiClient<null>("cart", { method: "DELETE" }),
 };

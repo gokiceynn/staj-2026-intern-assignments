@@ -1,6 +1,6 @@
 # E-Ticaret API Sözleşmesi
 
-> **Sürüm:** v1.3 Taslak  
+> **Sürüm:** v1.3  
 > **Base URL:** `/api/v1`  
 > **Hedef:** Web ve mobil frontend ekipleri  
 > **Son güncelleme:** 2026-07-15
@@ -265,6 +265,30 @@ Frontend bu endpointi uygulama açılışında bir kez çağır ve sonucu cache'
 ---
 
 ## 2. Auth Endpointleri
+
+### 2.0. Netleştirilmiş kararlar (v1.3)
+
+Aşağıdaki tablolar, önceki taslaklardaki çelişkileri giderir. **Backend ve tüm frontend ekipleri yalnızca bu kararları uygular.**
+
+#### Kayıt endpoint kararı
+
+| Konu | Karar |
+|---|---|
+| Müşteri kaydı | **Tek resmi yol:** `POST /auth/customer/register` |
+| Satıcı kaydı | `POST /auth/seller/register` |
+| `POST /auth/register` | **Kullanılmaz ve tanımlı değildir.** Eski kısa yol kaldırılmıştır. |
+| Gerekçe | Çok rollü mimaride rol ayrımı açık olmalıdır; satıcı kaydı ile simetrik path kullanımı (`/auth/{role}/register`) tercih edilir. |
+
+#### Hesap ve müşteri namespace kararı
+
+| Konu | Karar |
+|---|---|
+| Profil okuma / güncelleme / şifre / e-posta | `GET/PUT /account/me`, `PUT /account/me/password`, `PUT /account/me/email` vb. (Customer, Seller, Admin) |
+| Müşteri hesabını silme | `DELETE /customer/me` (yalnızca Customer) |
+| `GET /customer/me` | **Tanımlı değildir.** Profil bilgisi için `GET /account/me` kullanılır. |
+| Müşteri adresleri | `GET/POST/PUT/DELETE /customer/me/addresses` |
+
+---
 
 ### 2.1. Müşteri kaydı
 
@@ -3137,7 +3161,7 @@ Response Body (`200 OK`):
 
 ### 13.1. Müşteri kayıt akışı
 
-1. Kayıt formu gönderilir: `POST /auth/register`
+1. Kayıt formu gönderilir: `POST /auth/customer/register`
 2. Response'taki `sessionId` ve `expiresAt` alınır.
 3. OTP ekranı açılır.
 4. Kod girilince: `POST /auth/email/verify`
@@ -3306,7 +3330,7 @@ Silme:
 | Ekran | Kullanılan endpointler |
 |---|---|
 | Uygulama başlangıcı | `/metadata/statuses` |
-| Müşteri kayıt | `/auth/register`, `/auth/email/verify`, `/auth/email/resend` |
+| Müşteri kayıt | `/auth/customer/register`, `/auth/email/verify`, `/auth/email/resend` |
 | Satıcı kayıt | `/auth/seller/register`, `/auth/email/verify`, `/auth/email/resend` |
 | Login | `/auth/login`, `/auth/refresh-token`, `/auth/logout` |
 | Şifremi unuttum | `/auth/forgot-password`, `/auth/reset-password` |
@@ -3316,7 +3340,7 @@ Silme:
 | Sepet | `/cart`, `/cart/items/*` |
 | Checkout | `/customer/me/addresses`, `/orders/checkout` |
 | Siparişlerim | `/orders`, `/orders/{id}`, `/orders/{id}/cancel` |
-| Müşteri hesabı ve adresleri | `/account/me`, `/customer/me`, `/customer/me/addresses` |
+| Müşteri hesabı ve adresleri | `/account/me`, `/customer/me/addresses`, `DELETE /customer/me` |
 | Satıcı dashboard | `/seller/dashboard` |
 | Satıcı hesabı ve mağaza profili | `/account/me`, `/seller/profile` |
 | Satıcı ürünleri | `/seller/products`, `/photos`, `/categories` |

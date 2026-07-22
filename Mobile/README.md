@@ -1,7 +1,7 @@
 # 📱 VBShop - E-Ticaret Mobil Uygulaması 
 
 > **VB10 Staj 2026 · E-Ticaret Ana Projesi · Mobil Teslimatı**
-> Hepsiburada'dan ilham alan, uçtan uca çalışan bir e-ticaret mobil uygulaması.
+> Uçtan uca e-ticaret mobil uygulaması. API sözleşmesi: [`Docs/ecommerce_api_contract_v1.3.md`](../Docs/ecommerce_api_contract_v1.3.md)
 > Flutter · Riverpod · go_router · Dio · Clean Architecture
 
 ---

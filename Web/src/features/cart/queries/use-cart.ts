@@ -44,6 +44,31 @@ export function useUpdateCartItem() {
   });
 }
 
+export function useRemoveCartItem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (productId: string) => cartApi.removeItem(productId),
+    onSuccess: (data) => {
+      queryClient.setQueryData(queryKeys.cart.all, data);
+    },
+  });
+}
+
+export function useClearCart() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => cartApi.clear(),
+    onSuccess: () => {
+      queryClient.setQueryData(queryKeys.cart.all, {
+        items: [],
+        totalAmount: 0,
+        subtotal: 0,
+        currency: "TRY",
+      });
+    },
+  });
+}
+
 export function useCartItemCount() {
   const { data } = useCart();
   return data?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;

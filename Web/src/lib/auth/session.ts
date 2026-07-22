@@ -93,7 +93,7 @@ export async function getCurrentUser(): Promise<User | null> {
   if (!access) return null;
 
   try {
-    return await fetchWithAuth<User>("/users/me");
+    return await fetchWithAuth<User>("/account/me");
   } catch {
     return null;
   }

@@ -6,7 +6,7 @@ import type { OtpSession } from "@/types/api";
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const upstream = await fetch(`${getServerApiBaseUrl()}/auth/register`, {
+  const upstream = await fetch(`${getServerApiBaseUrl()}/auth/customer/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

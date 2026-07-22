@@ -1,65 +1,88 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
-import { getFavoritesRepository } from "@/features/favorites/repositories/local-favorites-repository";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { favoritesApi } from "@/features/favorites/api/favorites-api";
+import { useCurrentUser } from "@/features/auth/queries/use-auth";
+import { queryKeys } from "@/lib/query/keys";
+import { useToast } from "@/components/ui/toast-context";
+import { ApiError } from "@/lib/api/envelope";
 
-const listeners = new Set<() => void>();
+type FavoritesQuery = {
+  page?: number;
+  size?: number;
+};
 
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+export function useFavoritesList(params: FavoritesQuery = { page: 1, size: 12 }) {
+  const { data: user } = useCurrentUser();
+
+  return useQuery({
+    queryKey: queryKeys.favorites.list(params),
+    queryFn: () => favoritesApi.list(params),
+    enabled: Boolean(user),
+    staleTime: 30_000,
+  });
 }
 
-function notify() {
-  listeners.forEach((l) => l());
+export function useFavoriteIds() {
+  const { data: user } = useCurrentUser();
+
+  return useQuery({
+    queryKey: queryKeys.favorites.ids,
+    queryFn: async () => {
+      const result = await favoritesApi.list({ page: 1, size: 200 });
+      return new Set(result.items.map((item) => item.id));
+    },
+    enabled: Boolean(user),
+    staleTime: 30_000,
+  });
 }
 
-function getSnapshot(): string[] {
-  const repo = getFavoritesRepository();
-  return repo?.getAll() ?? [];
+export function useToggleFavorite() {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({
+      productId,
+      isFavorite,
+    }: {
+      productId: string;
+      isFavorite: boolean;
+    }) => {
+      if (isFavorite) {
+        await favoritesApi.remove(productId);
+      } else {
+        await favoritesApi.add(productId);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.favorites.all });
+    },
+    onError: (err) => {
+      showToast(
+        err instanceof ApiError ? err.message : "Favori işlemi başarısız",
+        "error",
+      );
+    },
+  });
 }
 
 export function useFavorites() {
-  const ids = useSyncExternalStore(subscribe, getSnapshot, () => []);
+  const { data: user } = useCurrentUser();
+  const { data: favoriteIds } = useFavoriteIds();
+  const toggleFavorite = useToggleFavorite();
 
-  const repo = getFavoritesRepository();
-  const isDevOnly = process.env.NODE_ENV === "development";
+  const has = (productId: string) => favoriteIds?.has(productId) ?? false;
 
-  const add = useCallback(
-    (productId: string) => {
-      if (!repo) return;
-      repo.add(productId);
-      notify();
-    },
-    [repo],
-  );
+  const toggle = (productId: string) => {
+    if (!user) return;
+    toggleFavorite.mutate({ productId, isFavorite: has(productId) });
+  };
 
-  const remove = useCallback(
-    (productId: string) => {
-      if (!repo) return;
-      repo.remove(productId);
-      notify();
-    },
-    [repo],
-  );
-
-  const toggle = useCallback(
-    (productId: string) => {
-      if (!repo) return;
-      if (repo.has(productId)) {
-        repo.remove(productId);
-      } else {
-        repo.add(productId);
-      }
-      notify();
-    },
-    [repo],
-  );
-
-  const has = useCallback(
-    (productId: string) => ids.includes(productId),
-    [ids],
-  );
-
-  return { ids, add, remove, toggle, has, isDevOnly, isAvailable: Boolean(repo) };
+  return {
+    has,
+    toggle,
+    isAvailable: Boolean(user),
+    isPending: toggleFavorite.isPending,
+  };
 }
