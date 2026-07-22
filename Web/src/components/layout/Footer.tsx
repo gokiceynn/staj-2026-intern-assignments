@@ -2,12 +2,12 @@ import Link from "next/link";
 
 const LINKS = {
   Kurumsal: [
-    { label: "Hakkımızda", href: "/products" },
-    { label: "Kariyer", href: "/products" },
-    { label: "İletişim", href: "/products" },
+    { label: "Hakkımızda", href: "/hakkimizda" },
+    { label: "Kariyer", href: "/kariyer" },
+    { label: "İletişim", href: "/iletisim" },
   ],
   Yardım: [
-    { label: "Sık Sorulan Sorular", href: "/products" },
+    { label: "Sık Sorulan Sorular", href: "/sss" },
     { label: "Sipariş Takibi", href: "/orders" },
     { label: "İade & Değişim", href: "/products" },
   ],
