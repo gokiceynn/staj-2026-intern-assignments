@@ -12,19 +12,19 @@ const DEALS = [
 export function QuickDealStrip() {
   return (
     <section aria-label="Hızlı kategoriler">
-      <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-4 px-4 py-1 sm:grid-cols-3 lg:grid-cols-6 xl:gap-5">
         {DEALS.map((deal) => (
           <Link
             key={deal.label}
             href={deal.href}
-            className="flex min-w-[88px] shrink-0 flex-col items-center gap-2 rounded-xl border border-border bg-surface p-3 shadow-card transition hover:border-brand-200 hover:shadow-md"
+            className="flex h-full min-h-[160px] w-full max-w-[240px] flex-col items-center justify-center gap-4 rounded-[1.25rem] border border-border bg-white/95 px-4 py-5 text-center shadow-xl transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-2xl dark:bg-slate-950/90"
           >
             <span
-              className={`flex h-12 w-12 items-center justify-center rounded-full text-xl ${deal.color}`}
+              className={`flex h-14 w-14 items-center justify-center rounded-full text-2xl ${deal.color}`}
             >
               {deal.emoji}
             </span>
-            <span className="text-center text-xs font-medium leading-tight">
+            <span className="max-w-[10rem] text-sm font-semibold leading-tight text-text dark:text-text">
               {deal.label}
             </span>
           </Link>
