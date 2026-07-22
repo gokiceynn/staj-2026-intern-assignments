@@ -1,0 +1,34 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio cache/options
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+
+# Docker ortam dosyaları ve runtime çıktıları
+.env
+docker/*/.env
+docker/*/secrets/
+docker/*/storage/
+
+# Others
+*.log
+*.tmp
+*.temp

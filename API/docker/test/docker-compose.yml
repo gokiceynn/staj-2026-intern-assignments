@@ -1,0 +1,79 @@
+name: ecommerce-test
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: UTC
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci", "--transaction-isolation=READ-COMMITTED"]
+    # 3307 dev stack'inde kullanılıyor; test ayrı port kullanır ki ikisi aynı anda ayakta olabilsin.
+    ports: ["127.0.0.1:3308:3306"]
+    volumes: ["mysql-test-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
+    environment: { REDIS_PASSWORD: "${REDIS_PASSWORD}" }
+    # 6380 dev stack'inde kullanılıyor.
+    ports: ["127.0.0.1:6381:6379"]
+    volumes:
+      - redis-test-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports: ["127.0.0.1:1026:1025", "127.0.0.1:8026:8025"]
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    environment:
+      # Development: Swagger UI ve SeedOnStartup sadece bu ortamda aktif (Program.cs:88,93)
+      ASPNETCORE_ENVIRONMENT: Development
+      SeedOnStartup: ${SeedOnStartup}
+      ConnectionStrings__MySql: ${ConnectionStrings__MySql}
+      Redis__ConnectionString: ${Redis__ConnectionString}
+      SecuritySecrets__HmacPepperBase64: ${SecuritySecrets__HmacPepperBase64}
+      SecuritySecrets__EncryptionKeyBase64: ${SecuritySecrets__EncryptionKeyBase64}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
+      Jwt__CurrentKeyId: ${Jwt__CurrentKeyId}
+      Jwt__PrivateKeyPath: /run/secrets/jwt/private.pem
+      Jwt__PublicKeysPath: /run/secrets/jwt/public
+      Smtp__Host: mailpit
+      Smtp__Port: 1025
+      Smtp__UseTls: "false"
+      Smtp__FromAddress: ${Smtp__FromAddress}
+    # Sağ taraf Dockerfile'daki ASPNETCORE_URLS ile sabit. Sol taraf 5080 değil, çünkü
+    # launchSettings.json lokal `dotnet run` için 5080'i kullanıyor.
+    ports: ["127.0.0.1:5082:8080"]
+    volumes:
+      - ./secrets/jwt:/run/secrets/jwt:ro
+      - ./storage:/app/storage
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      mailpit: { condition: service_started }
+    restart: unless-stopped
+
+volumes:
+  mysql-test-data:
+  redis-test-data:
