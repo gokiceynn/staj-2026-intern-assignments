@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useAiChat, useAiStatus } from "@/features/ai/queries/use-ai";
 import { Button } from "@/components/ui/Button";
@@ -39,7 +40,15 @@ export function AiAssistant() {
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
       {open && (
         <div className="flex h-[420px] w-[min(100vw-2rem,360px)] flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-lg">
-          <div className="border-b border-border bg-brand-500 px-4 py-3 text-white">
+          <div className="relative border-b border-border bg-brand-500 px-4 py-3 pr-12 text-white">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-lg leading-none transition hover:bg-white/25"
+              aria-label="Asistanı kapat"
+            >
+              ×
+            </button>
             <h2 className="font-semibold">VBShop Asistan</h2>
             <p className="text-xs text-white/80">
               {status?.configured
@@ -91,14 +100,23 @@ export function AiAssistant() {
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-md transition hover:bg-brand-600"
-        aria-label="AI asistan"
-      >
-        AI
-      </button>
+      <div className="ai-assistant-float">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="cursor-pointer border-0 bg-transparent p-0 transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 focus-visible:outline-offset-2"
+          aria-label="AI asistan"
+        >
+          <Image
+            src="/aigorsel.png"
+            alt="VBShop AI asistan"
+            width={1536}
+            height={1024}
+            className="h-auto w-[14rem] bg-transparent md:w-[16rem]"
+            priority
+          />
+        </button>
+      </div>
     </div>
   );
 }

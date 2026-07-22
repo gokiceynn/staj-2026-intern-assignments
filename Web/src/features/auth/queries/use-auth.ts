@@ -43,6 +43,10 @@ export function useRegister() {
   return useMutation({ mutationFn: authApi.register });
 }
 
+export function useRegisterSeller() {
+  return useMutation({ mutationFn: authApi.registerSeller });
+}
+
 export function useVerifyEmail() {
   const queryClient = useQueryClient();
   return useMutation({

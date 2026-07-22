@@ -12,6 +12,8 @@ const PROTECTED_PREFIXES = [
   "/profile",
   "/orders",
   "/favorites",
+  "/seller",
+  "/admin",
 ];
 
 export function middleware(request: NextRequest) {
@@ -44,5 +46,7 @@ export const config = {
     "/profile/:path*",
     "/orders/:path*",
     "/favorites/:path*",
+    "/seller/:path*",
+    "/admin/:path*",
   ],
 };

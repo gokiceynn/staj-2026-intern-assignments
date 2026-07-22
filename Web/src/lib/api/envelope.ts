@@ -39,8 +39,35 @@ export async function parseApiResponse<T>(
 export function getFieldErrors(
   error: unknown,
 ): Record<string, string[]> | null {
-  if (error instanceof ApiError) {
-    return error.errors;
+  if (error instanceof ApiError && error.errors) {
+    return mapApiFieldErrors(error.errors);
   }
   return null;
+}
+
+/** Backend PascalCase alan adlarını form alanlarına çevirir (Password → password). */
+export function mapApiFieldErrors(
+  errors: Record<string, string[]>,
+): Record<string, string[]> {
+  const aliases: Record<string, string> = {
+    EMAIL_ALREADY_EXISTS: "email",
+    EMAIL_NOT_VERIFIED: "email",
+    Email: "email",
+    Password: "password",
+    PasswordConfirm: "passwordConfirm",
+    FirstName: "firstName",
+    LastName: "lastName",
+    PhoneNumber: "phoneNumber",
+  };
+
+  const mapped: Record<string, string[]> = {};
+
+  for (const [key, messages] of Object.entries(errors)) {
+    const normalized =
+      aliases[key] ??
+      (key.length > 0 ? `${key[0]!.toLowerCase()}${key.slice(1)}` : key);
+    mapped[normalized] = messages;
+  }
+
+  return mapped;
 }
