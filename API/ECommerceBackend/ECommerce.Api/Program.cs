@@ -90,10 +90,14 @@ app.MapHealthChecks("/health/live", new() { Predicate = _ => false });
 app.MapHealthChecks("/health/ready", new() { Predicate = x => x.Tags.Contains("ready") });
 app.MapControllers();
 
-if (app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>("SeedOnStartup"))
+// Yalnızca Development: şema uygulanır, ardından istenirse örnek veri basılır.
+// Production'da migration başlangıçta çalışmaz; orada migration bundle kullanılır.
+if (app.Environment.IsDevelopment())
 {
     using IServiceScope scope = app.Services.CreateScope();
-    await scope.ServiceProvider.GetRequiredService<DatabaseSeeder>().SeedAsync(CancellationToken.None);
+    await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+    if (app.Configuration.GetValue<bool>("SeedOnStartup"))
+        await scope.ServiceProvider.GetRequiredService<DatabaseSeeder>().SeedAsync(CancellationToken.None);
 }
 await app.RunAsync();
 public partial class Program;

@@ -11,16 +11,6 @@ RUN find ECommerceBackend -type d \( -name bin -o -name obj \) -prune -exec rm -
 RUN dotnet restore ECommerceBackend/ECommerce.Api/ECommerce.Api.csproj
 RUN dotnet publish ECommerceBackend/ECommerce.Api/ECommerce.Api.csproj -c Release --no-restore -o /app/publish /p:UseAppHost=false
 
-# Şema uygulayıcı (yalnızca docker/test kullanır). Tek seferlik çalışır ve çıkar.
-# Bağlantı dizesini AppDbContextFactory, ConnectionStrings__MySql ortam değişkeninden okur.
-# Bu aşama 'final'dan ÖNCE gelmeli: Dockerfile'ın son aşaması varsayılan build hedefidir.
-FROM build AS migrations
-RUN dotnet tool install --global dotnet-ef --version '9.*'
-ENV PATH="$PATH:/root/.dotnet/tools"
-ENTRYPOINT ["dotnet", "ef", "database", "update", \
-    "--project", "ECommerceBackend/ECommerce.Infrastructure", \
-    "--startup-project", "ECommerceBackend/ECommerce.Api"]
-
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:8080 \
