@@ -40,9 +40,9 @@ export function HeroPromo() {
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1fr_280px]">
-      <div className="relative overflow-hidden rounded-xl">
+      <div className="relative overflow-visible rounded-xl">
         <div
-          className={`flex min-h-[220px] flex-col justify-center bg-gradient-to-r px-8 py-10 text-white md:min-h-[280px] md:px-12 ${slide.gradient}`}
+          className={`flex min-h-[220px] flex-col justify-center bg-gradient-to-r px-10 py-10 text-white md:min-h-[280px] md:px-14 ${slide.gradient}`}
         >
           <p className="text-sm font-medium uppercase tracking-wide text-white/80">
             VBShop Kampanyalar
@@ -61,7 +61,7 @@ export function HeroPromo() {
         <button
           type="button"
           onClick={prev}
-          className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text shadow-md hover:bg-white"
+          className="absolute -left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text shadow-md hover:bg-white"
           aria-label="Önceki kampanya"
         >
           <ChevronLeftIcon className="h-5 w-5" />
@@ -69,7 +69,7 @@ export function HeroPromo() {
         <button
           type="button"
           onClick={next}
-          className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text shadow-md hover:bg-white"
+          className="absolute -right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text shadow-md hover:bg-white"
           aria-label="Sonraki kampanya"
         >
           <ChevronRightIcon className="h-5 w-5" />
