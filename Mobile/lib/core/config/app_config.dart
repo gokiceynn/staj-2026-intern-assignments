@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Uygulama genel yapılandırması.
 ///
 /// Backend artık ayakta ve tüm uçlar (auth, katalog, sepet, favoriler,
@@ -17,33 +19,40 @@ abstract final class AppConfig {
   );
 
   /// Android emülatöründe host makine `10.0.2.2` üzerinden erişilir.
-  /// Port 5082: `API/docker/test/.env.example` → `API_PORT` (host tarafı;
-  /// konteyner içi hep 8080). Lokal `dotnet run` kullanıyorsan 5080'dir —
-  /// bu durumda `--dart-define=API_BASE_URL=http://10.0.2.2:5080/api/v1`.
-  static const String apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:5082/api/v1',
-  );
+  /// Web ve masaüstünde `localhost` kullanılır — tarayıcı `10.0.2.2`'ye erişemez.
+  static const String _apiBaseUrlFromEnv = String.fromEnvironment('API_BASE_URL');
 
-  /// Web (Next.js) uygulamasının adresi — yalnızca AI asistanı için kullanılır.
-  /// Gemini API key'i istemciye asla gömülmez (güvenlik); mevcut
-  /// `/api/ai/chat` sunucu ucu üzerinden proxy'lenir — bkz.
-  /// `Web/src/app/api/ai/chat/route.ts`.
-  static const String webBaseUrl = String.fromEnvironment(
-    'WEB_BASE_URL',
-    defaultValue: 'http://10.0.2.2:3000',
-  );
+  static String get apiBaseUrl {
+    if (_apiBaseUrlFromEnv.isNotEmpty) return _apiBaseUrlFromEnv;
+    if (kIsWeb) return 'http://localhost:5082/api/v1';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:5082/api/v1';
+    }
+    return 'http://localhost:5082/api/v1';
+  }
 
-  /// Yerel test ortamındaki Mailpit'in (sahte SMTP yakalayıcı) HTTP API
-  /// adresi. `USE_MOCK=false` iken OTP kodlarını gerçek e-posta yerine
-  /// buradan okuyup bildirim + otomatik doldurma yapmak için kullanılır
-  /// (bkz. `core/dev/dev_otp_watcher.dart`). Sadece Android emülatöründe
-  /// varsayılan olarak doğru çalışır (`10.0.2.2`); masaüstü/web'de
-  /// `--dart-define=MAILPIT_BASE_URL=http://localhost:8026` gerekir.
-  static const String mailpitBaseUrl = String.fromEnvironment(
-    'MAILPIT_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8026',
-  );
+  static const String _webBaseUrlFromEnv = String.fromEnvironment('WEB_BASE_URL');
+
+  static String get webBaseUrl {
+    if (_webBaseUrlFromEnv.isNotEmpty) return _webBaseUrlFromEnv;
+    if (kIsWeb) return 'http://localhost:3000';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:3000';
+    }
+    return 'http://localhost:3000';
+  }
+
+  static const String _mailpitBaseUrlFromEnv =
+      String.fromEnvironment('MAILPIT_BASE_URL');
+
+  static String get mailpitBaseUrl {
+    if (_mailpitBaseUrlFromEnv.isNotEmpty) return _mailpitBaseUrlFromEnv;
+    if (kIsWeb) return 'http://localhost:8026';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:8026';
+    }
+    return 'http://localhost:8026';
+  }
 
   static const String appName = 'VBShop';
 
