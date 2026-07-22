@@ -53,8 +53,10 @@ public sealed class AdminController(IClock clock) : ControllerBase
             )
         ).ToActionResult(this, clock, "Kullanıcılar getirildi.");
 
+    // Metot adı 'User' olamaz: ControllerBase.User (ClaimsPrincipal) gölgelenirdi.
+    // Rota özniteliğe bağlı olduğu için GET /admin/users/{id} değişmez.
     [HttpGet("users/{id}")]
-    public async Task<IActionResult> User(
+    public async Task<IActionResult> GetUser(
         string id,
         [FromServices] GetAdminUserHandler h,
         CancellationToken ct

@@ -9,6 +9,9 @@ namespace ECommerce.Application.Features.Reviews.ListReviews;
 
 public sealed class ListReviewsHandler(IAppDbContext db, IValidator<ListReviewsQuery> validator)
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1845:Use span-based 'string.Concat'",
+        Justification = "Substring burada EF Core expression tree'sinin içinde ve SQL'e çevriliyor; " +
+                        "AsSpan/span tabanlı Concat EF tarafından çevrilemez ve çalışma zamanında patlar.")]
     public async Task<Result<ReviewPage>> HandleAsync(ListReviewsQuery query, CancellationToken ct)
     {
         Error? error = await validator.ValidateAsErrorAsync(query, ct);
@@ -18,7 +21,8 @@ public sealed class ListReviewsHandler(IAppDbContext db, IValidator<ListReviewsQ
         var distribution = await reviews.GroupBy(x => x.Rating).Select(x => new { x.Key, Count = x.Count() })
             .ToDictionaryAsync(x => x.Key, x => x.Count, ct);
         for (int i = 1; i <= 5; i++) distribution.TryAdd(i, 0);
-        decimal average = total == 0 ? 0 : await reviews.AverageAsync(x => x.Rating, ct);
+        // Rating int olduğu için AverageAsync double döndürür; DTO decimal bekliyor.
+        decimal average = total == 0 ? 0m : (decimal)await reviews.AverageAsync(x => x.Rating, ct);
         reviews = query.SortBy switch
         {
             "oldest" => reviews.OrderBy(x => x.CreatedAtUtc),

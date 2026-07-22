@@ -24,7 +24,7 @@ public sealed class RedisRateLimitMiddleware(RequestDelegate next, ILogger<Redis
             context.Response.Headers["RateLimit-Reset"] = decision.ResetUnixSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
             if (!decision.IsAllowed)
             {
-                context.Response.StatusCode = 429; context.Response.Headers["Retry-After"] = decision.RetryAfterSeconds.ToString();
+                context.Response.StatusCode = 429; context.Response.Headers["Retry-After"] = decision.RetryAfterSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 await context.Response.WriteAsJsonAsync(ApiResponse<object?>.Failure("Too many requests.", 429,
                     new Dictionary<string, string[]> { ["RATE_LIMITED"] = ["Retry after the indicated number of seconds."] }, clock.UtcNow)); return;
             }

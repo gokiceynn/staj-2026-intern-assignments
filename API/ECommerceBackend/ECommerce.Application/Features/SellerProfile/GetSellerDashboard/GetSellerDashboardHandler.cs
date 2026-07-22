@@ -23,7 +23,7 @@ public sealed class GetSellerDashboardHandler(IAppDbContext db, ICurrentUser cur
             await packages.Select(x => x.OrderId).Distinct().CountAsync(ct), await packages.CountAsync(x => x.Status == PackageStatus.Paid, ct),
             await packages.CountAsync(x => x.Status == PackageStatus.Preparing, ct), await packages.CountAsync(x => x.Status == PackageStatus.Shipped, ct),
             await packages.CountAsync(x => x.Status == PackageStatus.Delivered, ct), await packages.CountAsync(x => x.Status == PackageStatus.Cancelled, ct),
-            await packages.Where(x => x.Status != PackageStatus.Cancelled).SumAsync(x => x.Subtotal), "TRY");
+            await packages.Where(x => x.Status != PackageStatus.Cancelled).SumAsync(x => x.Subtotal, ct), "TRY");
         return Result<SellerDashboardDto>.Success(dto);
     }
 }

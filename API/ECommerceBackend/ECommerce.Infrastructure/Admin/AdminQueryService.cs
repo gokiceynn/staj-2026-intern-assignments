@@ -35,7 +35,7 @@ public sealed class AdminQueryService(AppDbContext db) : IAdminQueryService
                 await orders.CountAsync(ct),
                 await orders
                     .Where(x => x.Status != OrderStatus.Cancelled)
-                    .SumAsync(x => x.TotalAmount),
+                    .SumAsync(x => x.TotalAmount, ct),
                 "TRY"
             )
         );

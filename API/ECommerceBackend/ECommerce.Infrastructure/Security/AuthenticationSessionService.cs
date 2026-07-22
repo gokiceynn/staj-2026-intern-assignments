@@ -47,9 +47,9 @@ public sealed class AuthenticationSessionService(
         try { principal = ValidateExpiredAccessToken(expiredAccessToken); }
         catch (SecurityTokenException) { return Result<TokenPair>.Failure(AuthErrors.InvalidRefreshToken); }
 
-        string accountId = principal.FindFirstValue(ClaimNames.Subject) ?? string.Empty;
-        string oldSessionId = principal.FindFirstValue(ClaimNames.SessionId) ?? string.Empty;
-        string oldJti = principal.FindFirstValue(ClaimNames.JwtId) ?? string.Empty;
+        string accountId = principal.FindFirst(ClaimNames.Subject)?.Value ?? string.Empty;
+        string oldSessionId = principal.FindFirst(ClaimNames.SessionId)?.Value ?? string.Empty;
+        string oldJti = principal.FindFirst(ClaimNames.JwtId)?.Value ?? string.Empty;
         string hash = refreshTokens.HashToken(refreshToken);
         RotationOutcome outcome = await transactions.ExecuteAsync(async token =>
         {
@@ -152,5 +152,5 @@ public sealed class AuthenticationSessionService(
 internal static class ClaimsPrincipalExtensions
 {
     public static int GetIntClaim(this ClaimsPrincipal principal, string name) =>
-        int.TryParse(principal.FindFirstValue(name), out int value) ? value : -1;
+        int.TryParse(principal.FindFirst(name)?.Value, out int value) ? value : -1;
 }

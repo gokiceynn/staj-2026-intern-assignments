@@ -6,6 +6,7 @@ public interface ISecurityRedisStore
 {
     Task<OtpCreateResult> CreateOtpSessionAsync(OtpSessionRecord session, TimeSpan ttl, TimeSpan cooldown, CancellationToken ct);
     Task<OtpVerificationResult> VerifyOtpAsync(OtpPurpose purpose, string sessionId, string otpHash, CancellationToken ct);
+    Task<OtpSessionSnapshot?> GetOtpSessionAsync(OtpPurpose purpose, string sessionId, CancellationToken ct);
     Task BlacklistJtiAsync(string jti, TimeSpan ttl, CancellationToken ct);
     Task<bool> IsJtiBlacklistedAsync(string jti, CancellationToken ct);
     Task RevokeSessionAsync(string sessionId, TimeSpan ttl, CancellationToken ct);
