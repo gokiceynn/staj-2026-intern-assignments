@@ -1,0 +1,10 @@
+# Ödev dokümanının yerel kopyaları — kaynak repo: VB10/staj-2026-intern-assignments
+VB10-staj-2026-intern-assignments-*.zip
+VB10-staj-2026-intern-assignments-*/
+
+# İşletim sistemi artıkları
+Thumbs.db
+.DS_Store
+
+.claude/
+.agents/

@@ -1,0 +1,108 @@
+name: ecommerce-test
+
+# Bu dosyada sabit değer yoktur; tüm ayarlar .env'den okunur (bkz. .env.example).
+# Konteyner içi yollar (/run/secrets/..., /app/storage) volume mount'larıyla eşleştiği
+# için sabit bırakılmıştır — değiştirmek volume satırını da değiştirmeyi gerektirir.
+
+services:
+  mysql:
+    image: ${MYSQL_IMAGE}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: ${TZ}
+    command:
+      - "--character-set-server=${MYSQL_CHARSET}"
+      - "--collation-server=${MYSQL_COLLATION}"
+      - "--transaction-isolation=${MYSQL_ISOLATION}"
+    ports: ["${BIND_ADDRESS}:${MYSQL_PORT}:3306"]
+    volumes: ["mysql-test-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: ${REDIS_IMAGE}
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      TZ: ${TZ}
+    ports: ["${BIND_ADDRESS}:${REDIS_PORT}:6379"]
+    volumes:
+      - redis-test-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # Sahte SMTP sunucusu: uygulamanın gönderdiği e-postaları yakalar, dışarı YOLLAMAZ.
+  # Doğrulama kodlarını web arayüzünden okursunuz. Ayrıntı: README → Mailpit
+  mailpit:
+    image: ${MAILPIT_IMAGE}
+    environment:
+      TZ: ${TZ}
+    ports:
+      - "${BIND_ADDRESS}:${MAILPIT_SMTP_PORT}:1025"
+      - "${BIND_ADDRESS}:${MAILPIT_UI_PORT}:8025"
+    restart: unless-stopped
+
+  # Şemayı API kendisi uygular: Program.cs'teki Development bloğu MigrateAsync() çağırır.
+  api:
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    environment:
+      # Swagger UI ve SeedOnStartup yalnızca Development'ta aktiftir (Program.cs:88,93)
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      TZ: ${TZ}
+      SeedOnStartup: ${SeedOnStartup}
+      Seed__Admin__Email: ${Seed__Admin__Email}
+      Seed__Admin__Password: ${Seed__Admin__Password}
+      Seed__Admin__FirstName: ${Seed__Admin__FirstName}
+      Seed__Admin__LastName: ${Seed__Admin__LastName}
+      Seed__Admin__PhoneNumber: ${Seed__Admin__PhoneNumber}
+      ConnectionStrings__MySql: ${ConnectionStrings__MySql}
+      Redis__ConnectionString: ${Redis__ConnectionString}
+      Redis__InstancePrefix: ${Redis__InstancePrefix}
+      SecuritySecrets__HmacPepperBase64: ${SecuritySecrets__HmacPepperBase64}
+      SecuritySecrets__EncryptionKeyBase64: ${SecuritySecrets__EncryptionKeyBase64}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
+      Jwt__CurrentKeyId: ${Jwt__CurrentKeyId}
+      Jwt__AccessTokenMinutes: ${Jwt__AccessTokenMinutes}
+      Jwt__RefreshTokenDays: ${Jwt__RefreshTokenDays}
+      Jwt__PrivateKeyPath: /run/secrets/jwt/private.pem
+      Jwt__PublicKeysPath: /run/secrets/jwt/public
+      Smtp__Host: ${Smtp__Host}
+      Smtp__Port: ${Smtp__Port}
+      Smtp__UseTls: ${Smtp__UseTls}
+      Smtp__UserName: ${Smtp__UserName}
+      Smtp__Password: ${Smtp__Password}
+      Smtp__FromAddress: ${Smtp__FromAddress}
+      Smtp__FromName: ${Smtp__FromName}
+      Otp__LifetimeMinutes: ${Otp__LifetimeMinutes}
+      Otp__MaxAttempts: ${Otp__MaxAttempts}
+      Otp__ResendCooldownSeconds: ${Otp__ResendCooldownSeconds}
+      Storage__MaxPhotoBytes: ${Storage__MaxPhotoBytes}
+      AllowedOrigins__0: ${ALLOWED_ORIGIN}
+    ports: ["${BIND_ADDRESS}:${API_PORT}:8080"]
+    volumes:
+      - ./secrets/jwt:/run/secrets/jwt:ro
+      - ./storage:/app/storage
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      mailpit: { condition: service_started }
+    restart: unless-stopped
+
+volumes:
+  mysql-test-data:
+  redis-test-data:

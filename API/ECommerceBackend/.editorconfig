@@ -1,0 +1,51 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,csx}]
+indent_style = space
+indent_size = 4
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+csharp_style_namespace_declarations = file_scoped:error
+csharp_style_prefer_primary_constructors = false:suggestion
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+dotnet_diagnostic.CA1062.severity = none
+
+# Aşağıdakiler kütüphane (NuGet paketi) tasarımı kurallarıdır: amaçları, API'yi
+# F#/VB gibi başka .NET dillerinden tüketen çağıranları korumaktır. Bu çözüm
+# dışarıya paket olarak dağıtılmayan, kendi içinde kapalı bir ASP.NET uygulaması;
+# kuralların pratik karşılığı yok, bedeli ise Result<T>/Error/`to` gibi yerleşik
+# isimleri bozmak olurdu.
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1000.severity = none
+
+# Implementasyondaki parametre adının arayüzdekiyle birebir aynı olmasını ister.
+# Amacı, çağıranın arayüz üzerinden isimlendirilmiş argüman (b: x) kullanabilmesidir.
+# Buradaki başlıca ihlal EF'in IEntityTypeConfiguration.Configure'ı; onu EF kendisi
+# çağırır, isimlendirilmiş argümanla çağıran kimse yok.
+dotnet_diagnostic.CA1725.severity = none
+
+# Yüksek hacimli log yollarında LoggerMessage kaynak üreticisini zorunlu kılar.
+# Bu çözümde loglama seyrek ve hata yollarında; sağladığı kazanç, her log satırı
+# için ayrı delege tanımlama maliyetini karşılamıyor.
+dotnet_diagnostic.CA1848.severity = none
+
+# EF Core migration'ları `dotnet ef migrations add` tarafından üretilir ve elle
+# düzenlenmez (bkz. Persistence/Migrations/README.md). Analyzer kuralları bunlara
+# uygulanmamalı; aksi halde üretilen her yeni migration build'i kırar.
+[**/Persistence/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+
+[*.{json,yml,yaml,xml,props,targets}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

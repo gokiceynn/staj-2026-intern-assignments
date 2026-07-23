@@ -1,0 +1,113 @@
+name: ecommerce-prod
+
+# Tüm ayarlar .env'den okunur (bkz. .env.example).
+#
+# İSTİSNA — veritabanı ve Redis parolaları: bunlar .env'de DEĞİL, external Docker
+# secret'larında tutulur. MySQL ve Redis imajları parolayı dosyadan okumayı destekler;
+# bu yöntemde parola `docker inspect` çıktısında ve süreç ortamında görünmez.
+# Oluşturmak için:
+#   printf '%s' 'parola' | docker secret create mysql_app_password -
+#   printf '%s' 'parola' | docker secret create mysql_root_password -
+#   printf '%s' 'parola' | docker secret create redis_password -
+
+services:
+  nginx:
+    image: ${NGINX_IMAGE}
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - tls:/run/secrets/tls:ro
+    depends_on: [api]
+    networks: [edge, backend]
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run]
+    restart: unless-stopped
+
+  api:
+    image: ${API_IMAGE}:${IMAGE_TAG}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      TZ: ${TZ}
+      Seed__Admin__Email: ${Seed__Admin__Email}
+      Seed__Admin__Password: ${Seed__Admin__Password}
+      Seed__Admin__FirstName: ${Seed__Admin__FirstName}
+      Seed__Admin__LastName: ${Seed__Admin__LastName}
+      Seed__Admin__PhoneNumber: ${Seed__Admin__PhoneNumber}
+      ConnectionStrings__MySql: ${ConnectionStrings__MySql}
+      Redis__ConnectionString: ${Redis__ConnectionString}
+      Redis__InstancePrefix: ${Redis__InstancePrefix}
+      SecuritySecrets__HmacPepperBase64: ${SecuritySecrets__HmacPepperBase64}
+      SecuritySecrets__EncryptionKeyBase64: ${SecuritySecrets__EncryptionKeyBase64}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
+      Jwt__CurrentKeyId: ${Jwt__CurrentKeyId}
+      Jwt__AccessTokenMinutes: ${Jwt__AccessTokenMinutes}
+      Jwt__RefreshTokenDays: ${Jwt__RefreshTokenDays}
+      Jwt__PrivateKeyPath: /run/secrets/jwt/private.pem
+      Jwt__PublicKeysPath: /run/secrets/jwt/public
+      Smtp__Host: ${Smtp__Host}
+      Smtp__Port: ${Smtp__Port}
+      Smtp__UseTls: ${Smtp__UseTls}
+      Smtp__UserName: ${Smtp__UserName}
+      Smtp__Password: ${Smtp__Password}
+      Smtp__FromAddress: ${Smtp__FromAddress}
+      Smtp__FromName: ${Smtp__FromName}
+      Otp__LifetimeMinutes: ${Otp__LifetimeMinutes}
+      Otp__MaxAttempts: ${Otp__MaxAttempts}
+      Otp__ResendCooldownSeconds: ${Otp__ResendCooldownSeconds}
+      Storage__MaxPhotoBytes: ${Storage__MaxPhotoBytes}
+      AllowedOrigins__0: ${ALLOWED_ORIGIN}
+    volumes:
+      - jwt:/run/secrets/jwt:ro
+      - api-storage:/app/storage
+    networks: [backend]
+    read_only: true
+    tmpfs: [/tmp]
+    restart: unless-stopped
+
+  mysql:
+    image: ${MYSQL_IMAGE}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_app_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      TZ: ${TZ}
+    command:
+      - "--character-set-server=${MYSQL_CHARSET}"
+      - "--collation-server=${MYSQL_COLLATION}"
+      - "--transaction-isolation=${MYSQL_ISOLATION}"
+    secrets: [mysql_app_password, mysql_root_password]
+    volumes: [mysql-prod-data:/var/lib/mysql]
+    networks: [backend]
+    restart: unless-stopped
+
+  redis:
+    image: ${REDIS_IMAGE}
+    entrypoint: ["/bin/sh", "-c", "exec redis-server /usr/local/etc/redis/redis.conf --requirepass \"$$(cat /run/secrets/redis_password)\""]
+    environment:
+      TZ: ${TZ}
+    secrets: [redis_password]
+    volumes:
+      - redis-prod-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks: [backend]
+    restart: unless-stopped
+
+networks:
+  edge:
+  backend: { internal: true }
+
+volumes:
+  mysql-prod-data:
+  redis-prod-data:
+  api-storage:
+  jwt: { external: true }
+  tls: { external: true }
+
+secrets:
+  mysql_app_password: { external: true }
+  mysql_root_password: { external: true }
+  redis_password: { external: true }

@@ -1,0 +1,10 @@
+[
+  { "id": "elektronik", "name": "Elektronik", "icon": "devices" },
+  { "id": "moda", "name": "Moda", "icon": "checkroom" },
+  { "id": "ev-yasam", "name": "Ev & Yaşam", "icon": "chair" },
+  { "id": "kozmetik", "name": "Kozmetik", "icon": "spa" },
+  { "id": "supermarket", "name": "Süpermarket", "icon": "local_grocery_store" },
+  { "id": "spor", "name": "Spor & Outdoor", "icon": "sports_soccer" },
+  { "id": "kitap", "name": "Kitap & Hobi", "icon": "menu_book" },
+  { "id": "anne-bebek", "name": "Anne & Bebek", "icon": "child_friendly" }
+]

@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-500: #ff6000;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-accent: #7c3aed;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f5f5;
+  --color-border: #e5e7eb;
+  --color-text: #111827;
+  --color-text-muted: #6b7280;
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+  --color-deal: #db2777;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.08);
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.dark {
+  --color-surface: #111827;
+  --color-surface-muted: #1f2937;
+  --color-border: #374151;
+  --color-text: #f9fafb;
+  --color-text-muted: #9ca3af;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-surface-muted text-text min-h-screen;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes leaf-sway {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(2.5deg);
+    }
+    50% {
+      transform: rotate(-1deg);
+    }
+    75% {
+      transform: rotate(1.8deg);
+    }
+  }
+
+  @keyframes leaf-sway-alt {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    30% {
+      transform: rotate(-2deg);
+    }
+    55% {
+      transform: rotate(1.2deg);
+    }
+    80% {
+      transform: rotate(-1.5deg);
+    }
+  }
+
+  .leaf-sway {
+    animation: leaf-sway 4.2s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .leaf-sway--alt {
+    animation: leaf-sway-alt 5s ease-in-out infinite;
+  }
+
+  .leaf-sway--slow {
+    animation-duration: 5.8s;
+  }
+
+  .leaf-sway--delay-1 {
+    animation-delay: -0.9s;
+  }
+
+  .leaf-sway--delay-2 {
+    animation-delay: -1.8s;
+  }
+
+  .leaf-sway--delay-3 {
+    animation-delay: -2.6s;
+  }
+
+  .leaf-sway--origin-tl {
+    transform-origin: top left;
+  }
+
+  .leaf-sway--origin-tr {
+    transform-origin: top right;
+  }
+
+  .leaf-sway--origin-bl {
+    transform-origin: bottom left;
+  }
+
+  .leaf-sway--origin-br {
+    transform-origin: bottom right;
+  }
+
+  @keyframes ai-assistant-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  .ai-assistant-float {
+    animation: ai-assistant-float 2.8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-sway,
+    .leaf-sway--alt,
+    .ai-assistant-float {
+      animation: none;
+    }
+  }
+}
